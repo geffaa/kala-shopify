@@ -1,0 +1,124 @@
+<footer class="site-footer scheme-{{ section.settings.color_scheme }}">
+  <div class="site-footer__cols">
+    {%- for block in section.blocks -%}
+      {%- case block.type -%}
+        {%- when 'signup' -%}
+          <div class="site-footer__signup" {{ block.shopify_attributes }}>
+            <p class="t-h2">{{ block.settings.heading | escape }}</p>
+            {%- if block.settings.text != blank -%}
+              <p class="t-muted" style="margin-top:8px">{{ block.settings.text | escape }}</p>
+            {%- endif -%}
+            <div style="margin-top:20px">
+            {%- form 'customer', id: 'footer-signup' -%}
+              <input type="hidden" name="contact[tags]" value="newsletter,drop-alert,source:footer">
+              {%- if form.posted_successfully? -%}
+                <p class="t-label" role="status">{{ 'newsletter.success' | t }}</p>
+              {%- else -%}
+                <div class="inline-form">
+                  <label for="footer-email" class="visually-hidden">{{ 'newsletter.label' | t }}</label>
+                  <input id="footer-email" class="input" type="email" name="contact[email]" required autocomplete="email" placeholder="{{ 'newsletter.placeholder' | t }}">
+                  <button class="btn" type="submit"><span>{{ 'newsletter.submit' | t }}</span></button>
+                </div>
+                {%- if form.errors -%}
+                  <p class="form-message form-message--error" role="alert">{{ form.errors.translated_fields.email | capitalize }} {{ form.errors.messages.email }}</p>
+                {%- endif -%}
+              {%- endif -%}
+            {%- endform -%}
+            </div>
+          </div>
+        {%- when 'menu' -%}
+          <nav {{ block.shopify_attributes }} aria-label="{{ block.settings.heading | escape }}">
+            <p class="t-label t-muted">{{ block.settings.heading | escape }}</p>
+            <ul role="list">
+              {%- for link in block.settings.menu.links -%}
+                <li><a href="{{ link.url }}">{{ link.title | escape }}</a></li>
+              {%- endfor -%}
+            </ul>
+          </nav>
+        {%- when 'text' -%}
+          <div {{ block.shopify_attributes }}>
+            <p class="t-label t-muted">{{ block.settings.heading | escape }}</p>
+            <div class="rte" style="margin-top:14px">{{ block.settings.text }}</div>
+          </div>
+      {%- endcase -%}
+    {%- endfor -%}
+  </div>
+
+  {%- if section.settings.show_wordmark -%}
+    <p class="site-footer__mark" aria-hidden="true">{{ settings.wordmark | default: shop.name }}</p>
+  {%- endif -%}
+
+  <div class="site-footer__base t-label t-label--sm">
+    <span>&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. {{ section.settings.base_text | escape }}</span>
+
+    {%- if localization.available_countries.size > 1 -%}
+      {%- form 'localization', class: 'localization', id: 'footer-localization' -%}
+        <label for="footer-country" class="t-muted">{{ 'localization.country' | t }}</label>
+        <select id="footer-country" name="country_code" class="select t-label t-label--sm">
+          {%- for country in localization.available_countries -%}
+            <option value="{{ country.iso_code }}" {% if country.iso_code == localization.country.iso_code %}selected{% endif %}>
+              {{ country.name }} ({{ country.currency.iso_code }})
+            </option>
+          {%- endfor -%}
+        </select>
+        <noscript><button class="t-label">{{ 'localization.update' | t }}</button></noscript>
+      {%- endform -%}
+    {%- endif -%}
+
+    {%- if settings.social_instagram != blank or settings.social_tiktok != blank -%}
+      <span style="display:flex;gap:16px">
+        {%- if settings.social_instagram != blank -%}<a href="{{ settings.social_instagram }}" class="link" rel="noopener" target="_blank">Instagram</a>{%- endif -%}
+        {%- if settings.social_tiktok != blank -%}<a href="{{ settings.social_tiktok }}" class="link" rel="noopener" target="_blank">TikTok</a>{%- endif -%}
+      </span>
+    {%- endif -%}
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Footer",
+  "class": "section-footer",
+  "enabled_on": { "groups": ["footer"] },
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "options": [
+        { "value": "paper", "label": "Paper" },
+        { "value": "ink", "label": "Ink" }
+      ],
+      "default": "ink"
+    },
+    { "type": "checkbox", "id": "show_wordmark", "label": "Show oversized wordmark", "default": true },
+    { "type": "text", "id": "base_text", "label": "Base line text", "default": "Cut and sewn in Bandung." }
+  ],
+  "blocks": [
+    {
+      "type": "signup",
+      "name": "Drop alerts signup",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Hear about the next drop first." },
+        { "type": "text", "id": "text", "label": "Text", "default": "One email per drop. No discounts-of-the-week." }
+      ]
+    },
+    {
+      "type": "menu",
+      "name": "Menu",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Shop" },
+        { "type": "link_list", "id": "menu", "label": "Menu", "default": "footer" }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "Text",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Studio" },
+        { "type": "richtext", "id": "text", "label": "Text", "default": "<p>Jl. Braga 21, Bandung<br>Open Thu–Sun, 11–19</p>" }
+      ]
+    }
+  ]
+}
+{% endschema %}

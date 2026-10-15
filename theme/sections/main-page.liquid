@@ -1,0 +1,10 @@
+<article class="section">
+  <div class="wrap--narrow">
+    <h1 class="t-h1">{{ page.title | escape }}</h1>
+    <div class="rte t-body-lg" style="margin-top:32px">{{ page.content }}</div>
+  </div>
+</article>
+
+{% schema %}
+{ "name": "Page", "tag": "section", "settings": [] }
+{% endschema %}

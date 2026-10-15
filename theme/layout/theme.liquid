@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="{{ request.locale.iso_code }}" class="no-js">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="{{ settings.color_paper }}">
+    <link rel="canonical" href="{{ canonical_url }}">
+
+    {%- comment -%}
+      One variable font file (wght 100–900, wdth 62–125, latin subset, 90 KB)
+      replaces what would otherwise be 4–6 static files. Preloaded so the
+      display type is ready before first paint on most connections.
+    {%- endcomment -%}
+    {{ 'archivo-var.woff2' | asset_url | preload_tag: as: 'font', type: 'font/woff2', crossorigin: 'anonymous' }}
+
+    {%- if settings.favicon != blank -%}
+      <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 64, height: 64 }}">
+    {%- endif -%}
+
+    <title>
+      {{- page_title -}}
+      {%- if current_tags -%}{%- assign joined_tags = current_tags | join: ', ' %} &ndash; {{ 'general.meta.tags' | t: tags: joined_tags }}{% endif -%}
+      {%- if current_page != 1 %} &ndash; {{ 'general.meta.page' | t: page: current_page }}{% endif -%}
+      {%- unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless -%}
+    </title>
+    {%- if page_description -%}
+      <meta name="description" content="{{ page_description | escape }}">
+    {%- endif -%}
+
+    {%- render 'meta-tags' -%}
+    {%- render 'theme-tokens' -%}
+
+    {{ 'base.css' | asset_url | stylesheet_tag }}
+
+    <script>
+      document.documentElement.className = document.documentElement.className.replace('no-js', 'js');
+    </script>
+    <script type="application/json" id="theme-config">
+      {
+        "routes": {
+          "root": {{ routes.root_url | json }},
+          "cart": {{ routes.cart_url | json }},
+          "cartAdd": {{ routes.cart_add_url | json }},
+          "cartChange": {{ routes.cart_change_url | json }},
+          "predictiveSearch": {{ routes.predictive_search_url | json }},
+          "recommendations": {{ routes.product_recommendations_url | json }}
+        },
+        "cartType": {{ settings.cart_type | json }},
+        "backInStockEndpoint": {{ settings.back_in_stock_endpoint | json }},
+        "strings": {
+          "addToCart": {{ 'products.product.add_to_cart' | t | json }},
+          "soldOut": {{ 'products.product.sold_out' | t | json }},
+          "unavailable": {{ 'products.product.unavailable' | t | json }},
+          "cartError": {{ 'cart.general.error' | t | json }},
+          "added": {{ 'products.product.added' | t | json }},
+          "countdown": [
+            {{ 'general.countdown.days' | t | json }},
+            {{ 'general.countdown.hours' | t | json }},
+            {{ 'general.countdown.minutes' | t | json }},
+            {{ 'general.countdown.seconds' | t | json }}
+          ]
+        }
+      }
+    </script>
+    <script src="{{ 'global.js' | asset_url }}" type="module"></script>
+
+    {{ content_for_header }}
+  </head>
+
+  <body class="template-{{ template.name | handle }}">
+    <a class="skip-link t-label" href="#main">{{ 'accessibility.skip_to_content' | t }}</a>
+
+    {% sections 'header-group' %}
+
+    <main id="main" role="main" tabindex="-1">
+      {{ content_for_layout }}
+    </main>
+
+    {% sections 'footer-group' %}
+
+    {%- if settings.cart_type == 'drawer' -%}
+      {% section 'cart-drawer' %}
+    {%- endif -%}
+
+    <div class="toast" role="status" aria-live="polite" data-toast hidden></div>
+  </body>
+</html>

@@ -1,0 +1,189 @@
+{
+  "accessibility": {
+    "skip_to_content": "Langsung ke konten"
+  },
+  "general": {
+    "close": "Tutup",
+    "view_all": "Lihat semua",
+    "meta": {
+      "tags": "Tag \"{{ tags }}\"",
+      "page": "Halaman {{ page }}"
+    },
+    "countdown": {
+      "days": "Hari",
+      "hours": "Jam",
+      "minutes": "Menit",
+      "seconds": "Detik"
+    }
+  },
+  "header": {
+    "menu": "Menu",
+    "search": "Cari",
+    "account": "Akun",
+    "cart": "Tas",
+    "primary_navigation": "Utama"
+  },
+  "newsletter": {
+    "label": "Email",
+    "placeholder": "Alamat email",
+    "submit": "Kabari saya",
+    "success": "Tercatat. Satu email saat drop berikutnya dibuka."
+  },
+  "localization": {
+    "country": "Kirim ke",
+    "update": "Perbarui"
+  },
+  "onboarding": {
+    "product_title": "Nama produk"
+  },
+  "password": {
+    "enter_store": "Masuk dengan kata sandi",
+    "label": "Kata sandi",
+    "enter": "Masuk",
+    "notify": "Kabari saya",
+    "admin_link_html": "Pemilik toko? <a href=\"{{ link }}\" class=\"link\">Masuk di sini</a>"
+  },
+  "products": {
+    "product": {
+      "add_to_cart": "Masukkan ke tas",
+      "added": "Masuk ke tas",
+      "sold_out": "Habis",
+      "unavailable": "Tidak tersedia",
+      "add_variant": "Masukkan {{ product }} ukuran {{ variant }} ke tas",
+      "quick_add": "Tambah cepat",
+      "quick_add_option": "Tambah — pilih {{ option }}",
+      "color_count": {
+        "one": "{{ count }} warna",
+        "other": "{{ count }} warna"
+      },
+      "last_units": {
+        "one": "Sisa {{ count }}",
+        "other": "Sisa {{ count }}"
+      },
+      "from_price": "Mulai {{ price }}",
+      "regular_price": "Harga normal",
+      "sale_price": "Harga diskon",
+      "tax_included": "Termasuk pajak",
+      "gallery_label": "Foto produk",
+      "size_guide": "Panduan ukuran",
+      "size_guide_missing": "Ukuran untuk produk ini segera hadir. Kirim pesan dan kami ukurkan untuk Anda.",
+      "fit": "Potongan",
+      "description": "Deskripsi",
+      "material_care": "Bahan & perawatan",
+      "material": "Bahan",
+      "origin": "Dibuat di",
+      "care": "Perawatan",
+      "pairs_with": "Cocok dengan"
+    },
+    "inventory": {
+      "in_stock": "Tersedia — dikirim dalam 1–2 hari kerja",
+      "low": {
+        "one": "Tinggal {{ count }} di ukuran ini",
+        "other": "Tinggal {{ count }} di ukuran ini"
+      },
+      "preorder": "Pre-order — dikirim setelah batch berikutnya selesai",
+      "sold_out": "Habis untuk pilihan ini"
+    },
+    "back_in_stock": {
+      "heading": "Kirim satu email jika {{ variant }} tersedia lagi",
+      "submit": "Kabari saya"
+    }
+  },
+  "cart": {
+    "general": {
+      "title": "Tas",
+      "items": {
+        "one": "{{ count }} barang",
+        "other": "{{ count }} barang"
+      },
+      "empty": "Tas Anda masih kosong.",
+      "continue": "Lihat drop",
+      "checkout": "Checkout",
+      "view_cart": "Lihat tas",
+      "subtotal": "Subtotal",
+      "note": "Catatan pesanan",
+      "taxes_and_shipping": "Termasuk pajak. Ongkir dihitung saat checkout.",
+      "remove": "Hapus",
+      "decrease": "Kurangi jumlah {{ product }}",
+      "increase": "Tambah jumlah {{ product }}",
+      "quantity_for": "Jumlah {{ product }}",
+      "error": "Terjadi kesalahan. Silakan coba lagi."
+    },
+    "shipping": {
+      "remaining_html": "Kurang {{ amount }} lagi untuk gratis ongkir",
+      "unlocked": "Gratis ongkir aktif",
+      "progress_label": "Progres gratis ongkir"
+    }
+  },
+  "collections": {
+    "general": {
+      "items_count": {
+        "one": "{{ count }} barang",
+        "other": "{{ count }} barang"
+      },
+      "count": {
+        "one": "{{ count }} koleksi",
+        "other": "{{ count }} koleksi"
+      },
+      "all": "Semua koleksi",
+      "load_more": "Muat lagi",
+      "no_matches": "Tidak ada yang cocok dengan filter ini.",
+      "products": "Produk"
+    },
+    "filters": {
+      "title": "Filter",
+      "apply": "Terapkan",
+      "clear_all": "Hapus semua",
+      "remove": "Hapus filter",
+      "show_results": "Lihat hasil",
+      "from": "Dari",
+      "to": "Sampai"
+    },
+    "sorting": {
+      "title": "Urutkan"
+    }
+  },
+  "search": {
+    "title": "Cari",
+    "label": "Cari di toko",
+    "placeholder": "Cari",
+    "submit": "Cari",
+    "suggestions": "Saran",
+    "products": "Produk",
+    "collections": "Koleksi",
+    "view_all": "Semua hasil untuk “{{ terms }}”",
+    "results_count": {
+      "one": "{{ count }} hasil untuk “{{ terms }}”",
+      "other": "{{ count }} hasil untuk “{{ terms }}”"
+    },
+    "no_results": "Tidak ada hasil untuk “{{ terms }}”."
+  },
+  "sections": {
+    "archive": {
+      "available": "Tersedia",
+      "sold_out": "Habis",
+      "upcoming": "Segera"
+    },
+    "lookbook": {
+      "count": {
+        "one": "{{ count }} item",
+        "other": "{{ count }} item"
+      },
+      "pin_label": "{{ number }} — {{ product }}"
+    }
+  },
+  "blogs": {
+    "article": {
+      "count": {
+        "one": "{{ count }} catatan",
+        "other": "{{ count }} catatan"
+      }
+    }
+  },
+  "templates": {
+    "404": {
+      "title": "Tidak ada.",
+      "subtext": "Halaman ini habis, pindah, atau memang tidak pernah ada. Drop yang sekarang masih dibuka."
+    }
+  }
+}

@@ -1,0 +1,166 @@
+{%- liquid
+  assign menu = section.settings.menu
+-%}
+<header class="site-header" data-header>
+  <div class="site-header__inner">
+    <button
+      type="button"
+      class="site-header__menu-btn t-label"
+      data-open-dialog="menu-drawer"
+      aria-haspopup="dialog"
+    >
+      {{- 'header.menu' | t -}}
+    </button>
+
+    <nav class="site-nav" aria-label="{{ 'header.primary_navigation' | t }}">
+      {%- for link in menu.links -%}
+        <a class="t-label" href="{{ link.url }}" {% if link.current %}aria-current="page"{% endif %}>
+          {{- link.title | escape -}}
+        </a>
+      {%- endfor -%}
+    </nav>
+
+    <a href="{{ routes.root_url }}" class="site-header__logo" aria-label="{{ shop.name | escape }}">
+      {%- if settings.logo -%}
+        {{ settings.logo | image_url: width: 480 | image_tag: widths: '120, 240, 480', sizes: 'var(--logo-width)', alt: shop.name, loading: 'eager' }}
+      {%- else -%}
+        {{- settings.wordmark | default: shop.name | escape -}}
+      {%- endif -%}
+    </a>
+
+    <div class="site-header__actions">
+      <a
+        href="{{ routes.search_url }}"
+        class="t-label"
+        data-open-dialog="search-sheet"
+        aria-haspopup="dialog"
+      >
+        <span class="hide-mobile" aria-hidden="true">{{ 'header.search' | t }}</span>
+        <span class="visually-hidden">{{ 'header.search' | t }}</span>
+        <span aria-hidden="true" style="display:inline-flex" class="show-mobile-inline">{% render 'icon', name: 'search' %}</span>
+      </a>
+      {%- if shop.customer_accounts_enabled -%}
+        <a href="{{ routes.account_url }}" class="t-label hide-mobile">{{ 'header.account' | t }}</a>
+      {%- endif -%}
+      <a
+        href="{{ routes.cart_url }}"
+        class="t-label"
+        {% if settings.cart_type == 'drawer' %}
+          data-open-dialog="cart-drawer" aria-haspopup="dialog"
+        {% endif %}
+      >
+        {{- 'header.cart' | t -}}
+        (<span class="cart-count" data-cart-count>{{ cart.item_count }}</span>)
+      </a>
+    </div>
+  </div>
+</header>
+
+{%- comment -%} Mobile navigation {%- endcomment -%}
+<dialog class="drawer drawer--left menu-drawer" id="menu-drawer" aria-label="{{ 'header.menu' | t }}">
+  <div class="drawer__head">
+    <span class="t-label">{{ 'header.menu' | t }}</span>
+    <button type="button" class="t-label" data-close-dialog>{{ 'general.close' | t }}</button>
+  </div>
+  <div class="drawer__body">
+    <nav class="menu-drawer__list">
+      {%- for link in menu.links -%}
+        <a href="{{ link.url }}" {% if link.current %}aria-current="page"{% endif %}>
+          <span>{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+          <span>{{ link.title | escape }}</span>
+        </a>
+      {%- endfor -%}
+    </nav>
+  </div>
+  <div class="drawer__foot">
+    {%- if shop.customer_accounts_enabled -%}
+      <a href="{{ routes.account_url }}" class="btn btn--outline btn--block">
+        <span>{{ 'header.account' | t }}</span>{% render 'icon', name: 'arrow' %}
+      </a>
+    {%- endif -%}
+  </div>
+</dialog>
+
+{%- comment -%} Search sheet: predictive results are fetched as a section. {%- endcomment -%}
+<dialog class="search-sheet" id="search-sheet" aria-label="{{ 'header.search' | t }}">
+  <predictive-search class="search-sheet__inner" data-limit="{{ section.settings.search_limit }}">
+    <form action="{{ routes.search_url }}" method="get" role="search" class="search-sheet__form">
+      <label for="search-sheet-input" class="visually-hidden">{{ 'search.label' | t }}</label>
+      <input
+        id="search-sheet-input"
+        class="search-sheet__input"
+        type="search"
+        name="q"
+        placeholder="{{ 'search.placeholder' | t }}"
+        autocomplete="off"
+        autocapitalize="off"
+        spellcheck="false"
+        aria-controls="predictive-search-results"
+        aria-autocomplete="list"
+      >
+      <input type="hidden" name="options[prefix]" value="last">
+      <button type="button" class="t-label" data-close-dialog>{{ 'general.close' | t }}</button>
+    </form>
+    <div id="predictive-search-results" class="search-sheet__results" aria-live="polite"></div>
+  </predictive-search>
+</dialog>
+
+<style>
+  .search-sheet {
+    width: 100vw;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-bottom: 1px solid var(--ink);
+    background: var(--paper);
+    color: var(--ink);
+    max-height: 85dvh;
+  }
+  .search-sheet::backdrop { background: rgba(var(--ink-rgb), 0.38); }
+  .search-sheet__form {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 16px;
+    padding: 0 var(--gutter);
+    border-bottom: 1px solid var(--rule);
+  }
+  .search-sheet__input {
+    height: 88px;
+    border: 0;
+    background: transparent;
+    font-size: var(--step-3);
+    font-weight: 760;
+    font-stretch: 115%;
+    letter-spacing: -0.025em;
+    text-transform: uppercase;
+    min-width: 0;
+  }
+  .search-sheet__input:focus { outline: none; }
+  .search-sheet__input::placeholder { color: var(--rule); }
+  .search-sheet__input::-webkit-search-cancel-button { display: none; }
+  .search-sheet__results { overflow-y: auto; max-height: calc(85dvh - 89px); }
+  .show-mobile-inline { display: inline-flex; }
+  @media (min-width: 990px) { .show-mobile-inline { display: none !important; } }
+</style>
+
+{% schema %}
+{
+  "name": "Header",
+  "class": "section-header",
+  "enabled_on": { "groups": ["header"] },
+  "settings": [
+    { "type": "link_list", "id": "menu", "label": "Menu", "default": "main-menu" },
+    {
+      "type": "range",
+      "id": "search_limit",
+      "label": "Predictive search results",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "default": 6
+    }
+  ]
+}
+{% endschema %}

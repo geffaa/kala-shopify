@@ -1,0 +1,189 @@
+{
+  "accessibility": {
+    "skip_to_content": "Skip to content"
+  },
+  "general": {
+    "close": "Close",
+    "view_all": "View all",
+    "meta": {
+      "tags": "Tagged \"{{ tags }}\"",
+      "page": "Page {{ page }}"
+    },
+    "countdown": {
+      "days": "Days",
+      "hours": "Hrs",
+      "minutes": "Min",
+      "seconds": "Sec"
+    }
+  },
+  "header": {
+    "menu": "Menu",
+    "search": "Search",
+    "account": "Account",
+    "cart": "Bag",
+    "primary_navigation": "Primary"
+  },
+  "newsletter": {
+    "label": "Email",
+    "placeholder": "Email address",
+    "submit": "Notify me",
+    "success": "Noted. One email when the next drop opens."
+  },
+  "localization": {
+    "country": "Ship to",
+    "update": "Update"
+  },
+  "onboarding": {
+    "product_title": "Product title"
+  },
+  "password": {
+    "enter_store": "Enter with password",
+    "label": "Password",
+    "enter": "Enter",
+    "notify": "Notify me",
+    "admin_link_html": "Store owner? <a href=\"{{ link }}\" class=\"link\">Log in here</a>"
+  },
+  "products": {
+    "product": {
+      "add_to_cart": "Add to bag",
+      "added": "Added to bag",
+      "sold_out": "Sold out",
+      "unavailable": "Unavailable",
+      "add_variant": "Add {{ product }} in {{ variant }} to bag",
+      "quick_add": "Quick add",
+      "quick_add_option": "Add — choose {{ option }}",
+      "color_count": {
+        "one": "{{ count }} colour",
+        "other": "{{ count }} colours"
+      },
+      "last_units": {
+        "one": "Last {{ count }}",
+        "other": "Last {{ count }}"
+      },
+      "from_price": "From {{ price }}",
+      "regular_price": "Regular price",
+      "sale_price": "Sale price",
+      "tax_included": "Tax included",
+      "gallery_label": "Product images",
+      "size_guide": "Size guide",
+      "size_guide_missing": "Measurements for this piece are coming soon. Message us and we'll measure it for you.",
+      "fit": "Fit",
+      "description": "Description",
+      "material_care": "Material & care",
+      "material": "Material",
+      "origin": "Made in",
+      "care": "Care",
+      "pairs_with": "Pairs with"
+    },
+    "inventory": {
+      "in_stock": "In stock — ships in 1–2 working days",
+      "low": {
+        "one": "Only {{ count }} left in this size",
+        "other": "Only {{ count }} left in this size"
+      },
+      "preorder": "Pre-order — ships when the next batch is finished",
+      "sold_out": "Sold out in this option"
+    },
+    "back_in_stock": {
+      "heading": "Get one email if {{ variant }} comes back",
+      "submit": "Notify me"
+    }
+  },
+  "cart": {
+    "general": {
+      "title": "Bag",
+      "items": {
+        "one": "{{ count }} item",
+        "other": "{{ count }} items"
+      },
+      "empty": "Your bag is empty.",
+      "continue": "Browse the drop",
+      "checkout": "Check out",
+      "view_cart": "View bag",
+      "subtotal": "Subtotal",
+      "note": "Order note",
+      "taxes_and_shipping": "Taxes included. Shipping calculated at checkout.",
+      "remove": "Remove",
+      "decrease": "Decrease quantity for {{ product }}",
+      "increase": "Increase quantity for {{ product }}",
+      "quantity_for": "Quantity for {{ product }}",
+      "error": "Something went wrong. Please try again."
+    },
+    "shipping": {
+      "remaining_html": "{{ amount }} away from free shipping",
+      "unlocked": "Free shipping unlocked",
+      "progress_label": "Progress to free shipping"
+    }
+  },
+  "collections": {
+    "general": {
+      "items_count": {
+        "one": "{{ count }} item",
+        "other": "{{ count }} items"
+      },
+      "count": {
+        "one": "{{ count }} collection",
+        "other": "{{ count }} collections"
+      },
+      "all": "All collections",
+      "load_more": "Load more",
+      "no_matches": "Nothing matches those filters.",
+      "products": "Products"
+    },
+    "filters": {
+      "title": "Filter",
+      "apply": "Apply",
+      "clear_all": "Clear all",
+      "remove": "Remove filter",
+      "show_results": "Show results",
+      "from": "From",
+      "to": "To"
+    },
+    "sorting": {
+      "title": "Sort"
+    }
+  },
+  "search": {
+    "title": "Search",
+    "label": "Search the store",
+    "placeholder": "Search",
+    "submit": "Search",
+    "suggestions": "Suggestions",
+    "products": "Products",
+    "collections": "Collections",
+    "view_all": "All results for “{{ terms }}”",
+    "results_count": {
+      "one": "{{ count }} result for “{{ terms }}”",
+      "other": "{{ count }} results for “{{ terms }}”"
+    },
+    "no_results": "No results for “{{ terms }}”."
+  },
+  "sections": {
+    "archive": {
+      "available": "Available",
+      "sold_out": "Sold out",
+      "upcoming": "Upcoming"
+    },
+    "lookbook": {
+      "count": {
+        "one": "{{ count }} piece",
+        "other": "{{ count }} pieces"
+      },
+      "pin_label": "{{ number }} — {{ product }}"
+    }
+  },
+  "blogs": {
+    "article": {
+      "count": {
+        "one": "{{ count }} entry",
+        "other": "{{ count }} entries"
+      }
+    }
+  },
+  "templates": {
+    "404": {
+      "title": "Not here.",
+      "subtext": "This page sold out, moved, or never existed. The current drop is still open."
+    }
+  }
+}

@@ -1,0 +1,29 @@
+<div class="coll-head">
+  <div class="coll-head__text">
+    <p class="t-label t-muted">{{ 'collections.general.count' | t: count: collections.size }}</p>
+    <h1 class="t-h1">{{ 'collections.general.all' | t }}</h1>
+  </div>
+</div>
+<ul role="list" class="grid grid--3" style="--cols-desktop: 3">
+  {%- for c in collections -%}
+    <li>
+      <a href="{{ c.url }}" class="card" style="text-decoration:none">
+        <span class="card__media">
+          {%- if c.featured_image -%}
+            {{ c.featured_image | image_url: width: 1000 | image_tag: widths: '360, 540, 720, 1000', sizes: '(min-width: 750px) 33vw, 50vw', alt: '', loading: 'lazy' }}
+          {%- else -%}
+            {{ 'collection-1' | placeholder_svg_tag: 'placeholder-svg' }}
+          {%- endif -%}
+        </span>
+        <span class="card__info">
+          <span class="card__title">{{ c.title | escape }}</span>
+          <span class="card__price t-label t-muted">{{ c.products_count }}</span>
+        </span>
+      </a>
+    </li>
+  {%- endfor -%}
+</ul>
+
+{% schema %}
+{ "name": "Collections list", "tag": "section", "settings": [] }
+{% endschema %}

@@ -1,0 +1,99 @@
+{%- liquid
+  assign columns = section.settings.columns
+-%}
+{{ 'collection.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'facets.js' | asset_url }}" type="module"></script>
+
+<div class="coll-head">
+  <div class="coll-head__text">
+    <p class="t-label t-muted">{{ 'search.title' | t }}</p>
+    <form action="{{ routes.search_url }}" method="get" role="search" class="inline-form" style="max-width:640px">
+      <label for="search-page-input" class="visually-hidden">{{ 'search.label' | t }}</label>
+      <input id="search-page-input" class="input" type="search" name="q" value="{{ search.terms | escape }}" placeholder="{{ 'search.placeholder' | t }}">
+      <input type="hidden" name="options[prefix]" value="last">
+      <input type="hidden" name="type" value="product">
+      <button class="btn" type="submit"><span>{{ 'search.submit' | t }}</span></button>
+    </form>
+  </div>
+</div>
+
+{%- if search.performed -%}
+  <facet-filters class="coll" data-section-id="{{ section.id }}">
+    {%- paginate search.results by 24 -%}
+      <div class="coll__toolbar">
+        {%- if search.filters.size > 0 -%}
+          <button type="button" class="t-label coll__filter-btn" data-open-dialog="facets-{{ section.id }}" aria-haspopup="dialog">{{ 'collections.filters.title' | t }}<span id="filter-count-{{ section.id }}"></span></button>
+        {%- endif -%}
+        <p class="t-label t-muted" id="product-count-{{ section.id }}" role="status">{{ 'search.results_count' | t: count: search.results_count, terms: search.terms }}</p>
+        <div class="coll__sort">
+          <label for="sort-{{ section.id }}" class="t-label t-muted">{{ 'collections.sorting.title' | t }}</label>
+          <select id="sort-{{ section.id }}" name="sort_by" class="select t-label" form="facets-form-{{ section.id }}">
+            {%- assign sort_by = search.sort_by | default: search.default_sort_by -%}
+            {%- for option in search.sort_options -%}
+              <option value="{{ option.value | escape }}" {% if option.value == sort_by %}selected{% endif %}>{{ option.name | escape }}</option>
+            {%- endfor -%}
+          </select>
+        </div>
+      </div>
+      <div class="coll__body">
+        <dialog class="drawer drawer--left facets" id="facets-{{ section.id }}" aria-label="{{ 'collections.filters.title' | t }}">
+          <div class="drawer__head facets__head">
+            <span class="t-label">{{ 'collections.filters.title' | t }}</span>
+            <button type="button" class="t-label" data-close-dialog>{{ 'general.close' | t }}</button>
+          </div>
+          <form id="facets-form-{{ section.id }}" class="drawer__body facets__form" action="{{ routes.search_url }}" method="get">
+            <input type="hidden" name="type" value="product">
+            <div id="facets-body-{{ section.id }}">{% render 'facets', results: search, section_id: section.id %}</div>
+          </form>
+          <div class="drawer__foot facets__foot">
+            <button type="button" class="btn btn--block" data-close-dialog><span>{{ 'collections.filters.show_results' | t }}</span></button>
+          </div>
+        </dialog>
+        <div class="coll__results" id="results-{{ section.id }}">
+          <div id="active-facets-{{ section.id }}" class="chips">
+            {%- for filter in search.filters -%}
+              {%- for value in filter.active_values -%}
+                <a href="{{ value.url_to_remove }}" class="chip t-label t-label--sm" data-facet-link>{{ value.label | escape }} {% render 'icon', name: 'close' %}</a>
+              {%- endfor -%}
+            {%- endfor -%}
+          </div>
+          {%- if search.results_count == 0 -%}
+            <div class="coll__empty"><p class="t-h2">{{ 'search.no_results' | t: terms: search.terms }}</p></div>
+          {%- endif -%}
+          <h2 class="visually-hidden">{{ 'collections.general.products' | t }}</h2>
+          <ul role="list" class="grid grid--{{ columns }}" id="product-grid-{{ section.id }}" style="--cols-desktop: {{ columns }}" data-grid>
+            {%- for item in search.results -%}
+              {%- if item.object_type == 'product' -%}
+                <li>{% render 'product-card', product: item, columns: columns %}</li>
+              {%- endif -%}
+            {%- endfor -%}
+          </ul>
+          <div id="pager-{{ section.id }}" class="pager">
+            {%- if paginate.next -%}
+              <a href="{{ paginate.next.url }}" class="btn btn--outline" data-load-more><span class="btn__text">{{ 'collections.general.load_more' | t }}</span></a>
+            {%- endif -%}
+          </div>
+        </div>
+      </div>
+    {%- endpaginate -%}
+  </facet-filters>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Search results",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "select",
+      "id": "columns",
+      "label": "Columns (desktop)",
+      "options": [
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" }
+      ],
+      "default": "3"
+    }
+  ]
+}
+{% endschema %}

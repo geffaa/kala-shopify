@@ -1,0 +1,24 @@
+{
+  "name": "kala-shopify",
+  "version": "1.0.0",
+  "description": "Custom Shopify OS 2.0 theme + ops tooling for a drop-based apparel store",
+  "scripts": {
+    "theme:dev": "shopify theme dev --path theme",
+    "theme:check": "shopify theme check --path theme",
+    "theme:push": "shopify theme push --path theme --unpublished",
+    "preview": "node preview/server.mjs",
+    "e2e": "node preview/e2e.mjs",
+    "screenshots": "node preview/shoot.mjs",
+    "images": "node design/build.mjs",
+    "ops:test": "npm --prefix ops test",
+    "test": "npm run theme:check && npm run ops:test"
+  },
+  "type": "module",
+  "devDependencies": {
+    "@fontsource-variable/archivo": "^5.3.0",
+    "@shopify/cli": "^4.9.4",
+    "liquidjs": "^10.30.0",
+    "puppeteer-core": "^25.14.0"
+  },
+  "private": true
+}

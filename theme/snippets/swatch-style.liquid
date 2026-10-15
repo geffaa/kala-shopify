@@ -1,0 +1,34 @@
+{%- comment -%}
+  Outputs `--swatch: <color|url()>` for an option or filter value.
+  Prefers the swatch configured in Shopify (category metafields / filter
+  swatches); falls back to a small map of the colour names this store uses,
+  so swatches render even before merchandising has set them up.
+{%- endcomment -%}
+{%- liquid
+  if value.swatch.image
+    assign url = value.swatch.image | image_url: width: 64
+    echo '--swatch: url(' | append: url | append: ')'
+  elsif value.swatch.color
+    echo '--swatch: ' | append: value.swatch.color
+  else
+    assign key = value | downcase | strip
+    case key
+      when 'bone', 'natural', 'ecru', 'putih tulang'
+        echo '--swatch: #E8E1D3'
+      when 'ink', 'black', 'hitam'
+        echo '--swatch: #26262A'
+      when 'clay', 'terracotta', 'bata'
+        echo '--swatch: #B5683F'
+      when 'olive', 'sage', 'hijau'
+        echo '--swatch: #6E7458'
+      when 'sand', 'khaki', 'krem'
+        echo '--swatch: #C9BB9B'
+      when 'navy', 'biru'
+        echo '--swatch: #2C3550'
+      when 'grey', 'gray', 'abu'
+        echo '--swatch: #8E8D88'
+      when 'white', 'putih'
+        echo '--swatch: #F6F5F1'
+    endcase
+  endif
+-%}

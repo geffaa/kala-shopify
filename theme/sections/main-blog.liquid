@@ -1,0 +1,33 @@
+{%- paginate blog.articles by 12 -%}
+  <div class="coll-head">
+    <div class="coll-head__text">
+      <p class="t-label t-muted">{{ 'blogs.article.count' | t: count: blog.articles_count }}</p>
+      <h1 class="t-h1">{{ blog.title | escape }}</h1>
+    </div>
+  </div>
+  <ol role="list" class="journal rule-top">
+    {%- for article in blog.articles -%}
+      <li class="journal__row">
+        <a href="{{ article.url }}" class="journal__link">
+          <time class="t-label t-muted" datetime="{{ article.published_at | date: '%Y-%m-%d' }}">{{ article.published_at | date: '%d.%m.%Y' }}</time>
+          <span class="journal__title">{{ article.title | escape }}</span>
+          <span class="journal__excerpt t-muted">{{ article.excerpt_or_content | strip_html | truncatewords: 24 }}</span>
+        </a>
+      </li>
+    {%- endfor -%}
+  </ol>
+  {%- if paginate.pages > 1 -%}{{ paginate | default_pagination: next: '→', previous: '←' }}{%- endif -%}
+{%- endpaginate -%}
+<style>
+  .journal__row { border-bottom: 1px solid var(--rule); }
+  .journal__link { display: grid; gap: 8px; padding: 24px var(--gutter); text-decoration: none; }
+  .journal__title { font-size: var(--step-2); font-weight: 680; font-stretch: 108%; line-height: 1.1; }
+  .journal__link:hover .journal__title { text-decoration: underline; text-underline-offset: 5px; text-decoration-thickness: 1px; }
+  @media (min-width: 990px) {
+    .journal__link { grid-template-columns: 160px 1fr 1fr; gap: var(--gutter); align-items: baseline; }
+  }
+</style>
+
+{% schema %}
+{ "name": "Blog", "tag": "section", "settings": [] }
+{% endschema %}

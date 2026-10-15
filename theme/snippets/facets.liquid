@@ -1,0 +1,110 @@
+{%- comment -%}
+  Storefront filters for a collection or search results.
+  - results: collection or search object (both expose .filters)
+  - section_id
+  Field names come from Shopify (filter.v.option.size, filter.v.price.gte …),
+  so the same form also works as a plain GET form without JavaScript.
+{%- endcomment -%}
+{%- for filter in results.filters -%}
+  {%- liquid
+    assign is_open = false
+    if forloop.index <= 2 or filter.active_values.size > 0
+      assign is_open = true
+    endif
+  -%}
+  <details class="disclosure facet" id="facet-{{ section_id }}-{{ filter.param_name | handle }}" {% if is_open %}open{% endif %}>
+    <summary class="t-label">
+      <span>
+        {{- filter.label | escape -}}
+        {%- if filter.active_values.size > 0 %} <span class="t-signal">({{ filter.active_values.size }})</span>{% endif -%}
+      </span>
+    </summary>
+
+    {%- case filter.type -%}
+      {%- when 'list' -%}
+        <ul role="list" class="facet__list{% if filter.presentation == 'swatch' %} facet__list--swatch{% endif %}">
+          {%- for value in filter.values -%}
+            {%- assign input_id = 'f-' | append: section_id | append: '-' | append: filter.param_name | handle | append: '-' | append: forloop.index -%}
+            <li>
+              <input
+                type="checkbox"
+                class="visually-hidden facet__input"
+                id="{{ input_id }}"
+                name="{{ value.param_name }}"
+                value="{{ value.value }}"
+                {% if value.active %}checked{% endif %}
+                {% if value.count == 0 and value.active == false %}disabled{% endif %}
+              >
+              <label for="{{ input_id }}" class="facet__option{% if value.count == 0 and value.active == false %} is-empty{% endif %}">
+                {%- if filter.presentation == 'swatch' -%}
+                  <span class="swatch" style="{% render 'swatch-style', value: value %}" aria-hidden="true"></span>
+                {%- else -%}
+                  <span class="facet__box" aria-hidden="true"></span>
+                {%- endif -%}
+                <span>{{ value.label | escape }}</span>
+                <span class="t-muted facet__count">{{ value.count }}</span>
+              </label>
+            </li>
+          {%- endfor -%}
+        </ul>
+
+      {%- when 'boolean' -%}
+        <ul role="list" class="facet__list">
+          {%- for value in filter.values -%}
+            {%- assign input_id = 'f-' | append: section_id | append: '-' | append: filter.param_name | handle | append: '-' | append: forloop.index -%}
+            <li>
+              <input type="checkbox" class="visually-hidden facet__input" id="{{ input_id }}" name="{{ value.param_name }}" value="{{ value.value }}" {% if value.active %}checked{% endif %}>
+              <label for="{{ input_id }}" class="facet__option">
+                <span class="facet__box" aria-hidden="true"></span>
+                <span>{{ value.label | escape }}</span>
+                <span class="t-muted facet__count">{{ value.count }}</span>
+              </label>
+            </li>
+          {%- endfor -%}
+        </ul>
+
+      {%- when 'price_range' -%}
+        {%- liquid
+          assign currency_symbol = cart.currency.symbol | default: cart.currency.iso_code
+          assign max_major = filter.range_max | divided_by: 100.0 | ceil
+        -%}
+        <div class="facet__price">
+          <div class="field">
+            <label class="t-label t-label--sm t-muted" for="price-min-{{ section_id }}">{{ 'collections.filters.from' | t }} ({{ currency_symbol }})</label>
+            <input
+              class="input"
+              id="price-min-{{ section_id }}"
+              type="number"
+              inputmode="numeric"
+              min="0"
+              max="{{ max_major }}"
+              name="{{ filter.min_value.param_name }}"
+              {% if filter.min_value.value %}value="{{ filter.min_value.value | divided_by: 100.0 | round }}"{% endif %}
+              placeholder="0"
+              data-debounce
+            >
+          </div>
+          <div class="field">
+            <label class="t-label t-label--sm t-muted" for="price-max-{{ section_id }}">{{ 'collections.filters.to' | t }} ({{ currency_symbol }})</label>
+            <input
+              class="input"
+              id="price-max-{{ section_id }}"
+              type="number"
+              inputmode="numeric"
+              min="0"
+              max="{{ max_major }}"
+              name="{{ filter.max_value.param_name }}"
+              {% if filter.max_value.value %}value="{{ filter.max_value.value | divided_by: 100.0 | round }}"{% endif %}
+              placeholder="{{ max_major }}"
+              data-debounce
+            >
+          </div>
+        </div>
+    {%- endcase -%}
+  </details>
+{%- endfor -%}
+
+{%- if results.terms -%}
+  <input type="hidden" name="q" value="{{ results.terms | escape }}">
+  <input type="hidden" name="options[prefix]" value="last">
+{%- endif -%}

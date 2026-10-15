@@ -1,0 +1,129 @@
+{%- comment -%}
+  Drop archive rendered as an index table. Status is derived from inventory:
+  a drop whose products are all unavailable reads "Sold out" without anyone
+  having to remember to update it. The "Upcoming" override is for drops whose
+  collection exists but is not on sale yet.
+{%- endcomment -%}
+<section class="archive section--flush" aria-labelledby="archive-title-{{ section.id }}">
+  <div class="sec-head">
+    <span class="t-label t-muted">{{ section.settings.index_label | escape }}</span>
+    <h2 class="sec-head__title" id="archive-title-{{ section.id }}">{{ section.settings.heading | escape }}</h2>
+    <span></span>
+  </div>
+
+  <ol class="archive__list" role="list">
+    {%- for block in section.blocks -%}
+      {%- liquid
+        assign c = block.settings.collection
+        assign available_count = 0
+        for p in c.products limit: 50
+          if p.available
+            assign available_count = available_count | plus: 1
+          endif
+        endfor
+        if block.settings.upcoming
+          assign status = 'sections.archive.upcoming' | t
+          assign status_class = 'badge--signal'
+        elsif c.products_count > 0 and available_count == 0
+          assign status = 'sections.archive.sold_out' | t
+          assign status_class = 'badge--ink'
+        else
+          assign status = 'sections.archive.available' | t
+          assign status_class = ''
+        endif
+      -%}
+      <li class="archive__row" {{ block.shopify_attributes }}>
+        <a href="{{ c.url | default: '#' }}" class="archive__link">
+          <span class="archive__no t-label t-muted">{{ block.settings.number | escape }}</span>
+          <span class="archive__name">{{ c.title | default: block.settings.fallback_title | escape }}</span>
+          <span class="archive__meta t-label t-muted hide-mobile">{{ block.settings.season | escape }}</span>
+          <span class="archive__meta t-label t-muted hide-mobile">{{ 'collections.general.items_count' | t: count: c.products_count }}</span>
+          <span class="badge t-label t-label--sm {{ status_class }}">{{ status }}</span>
+          {%- if c.image -%}
+            <span class="archive__peek media" aria-hidden="true">
+              {{ c.image | image_url: width: 600 | image_tag: widths: '300, 450, 600', sizes: '280px', alt: '', loading: 'lazy' }}
+            </span>
+          {%- endif -%}
+        </a>
+      </li>
+    {%- endfor -%}
+  </ol>
+</section>
+
+<style>
+  .archive__list { border-bottom: 1px solid var(--line); }
+  .archive__row + .archive__row { border-top: 1px solid var(--line); }
+  .archive__link {
+    position: relative;
+    display: grid;
+    grid-template-columns: 48px 1fr auto;
+    gap: 16px;
+    align-items: center;
+    padding: 18px var(--gutter);
+    text-decoration: none;
+    transition: background var(--dur) var(--ease), padding var(--dur) var(--ease);
+  }
+  .archive__name {
+    font-size: var(--step-2);
+    font-weight: 720;
+    font-stretch: 112%;
+    text-transform: uppercase;
+    letter-spacing: -0.015em;
+    line-height: 1;
+  }
+  .archive__peek {
+    position: absolute;
+    right: 22%;
+    top: 50%;
+    width: 220px;
+    aspect-ratio: 4 / 5;
+    translate: 0 -50%;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 2;
+    transition: opacity var(--dur) var(--ease), translate 320ms var(--ease);
+  }
+  .archive__peek img { width: 100%; height: 100%; object-fit: cover; }
+  @media (min-width: 990px) {
+    .archive__link { grid-template-columns: 64px 1fr 220px 120px 110px; }
+    .archive__link:hover { background: var(--ink); color: var(--paper); }
+    .archive__link:hover .t-muted { color: rgba(var(--paper-rgb), 0.6); }
+    .archive__link:hover .archive__peek { opacity: 1; translate: 0 -54%; }
+  }
+  @media (hover: none) { .archive__peek { display: none; } }
+</style>
+
+{% schema %}
+{
+  "name": "Drop archive",
+  "tag": "div",
+  "max_blocks": 12,
+  "settings": [
+    { "type": "text", "id": "index_label", "label": "Index label", "default": "04" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Archive" }
+  ],
+  "blocks": [
+    {
+      "type": "drop",
+      "name": "Drop",
+      "settings": [
+        { "type": "collection", "id": "collection", "label": "Collection" },
+        { "type": "text", "id": "number", "label": "Number", "default": "07" },
+        { "type": "text", "id": "fallback_title", "label": "Title (if no collection)", "default": "Kemarau" },
+        { "type": "text", "id": "season", "label": "Season", "default": "Dry season 2026" },
+        { "type": "checkbox", "id": "upcoming", "label": "Mark as upcoming", "default": false }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Drop archive",
+      "blocks": [
+        { "type": "drop", "settings": { "number": "07", "fallback_title": "Kemarau", "season": "Dry season 2026", "upcoming": true } },
+        { "type": "drop", "settings": { "number": "06", "fallback_title": "Pancaroba", "season": "Transition 2026" } },
+        { "type": "drop", "settings": { "number": "05", "fallback_title": "Hujan", "season": "Wet season 2025" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

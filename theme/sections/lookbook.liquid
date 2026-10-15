@@ -1,0 +1,155 @@
+{%- comment -%}
+  Shoppable image. Each hotspot block pins a product to a point on the image
+  and has a matching row in the list, so the products are reachable without
+  hunting for markers (and by keyboard / screen reader in a sensible order).
+{%- endcomment -%}
+<section class="look section--flush" aria-labelledby="look-title-{{ section.id }}">
+  <div class="sec-head">
+    <span class="t-label t-muted">{{ section.settings.index_label | escape }}</span>
+    <h2 class="sec-head__title" id="look-title-{{ section.id }}">{{ section.settings.heading | escape }}</h2>
+    <span class="t-label t-muted hide-mobile">{{ 'sections.lookbook.count' | t: count: section.blocks.size }}</span>
+  </div>
+
+  <look-book class="look__grid">
+    <div class="look__media media"{% if section.settings.image %} style="--look-ratio: {{ section.settings.image.aspect_ratio }}"{% endif %}>
+      {%- if section.settings.image -%}
+        {% render 'image', image: section.settings.image, sizes: '(min-width: 990px) 66vw, 100vw' %}
+      {%- else -%}
+        {{ 'lifestyle-1' | placeholder_svg_tag: 'placeholder-svg' }}
+      {%- endif -%}
+      {%- for block in section.blocks -%}
+        {%- assign pin_number = forloop.index | prepend: '0' | slice: -2, 2 -%}
+        <button
+          type="button"
+          class="look__pin t-label t-label--sm"
+          style="left: {{ block.settings.x }}%; top: {{ block.settings.y }}%"
+          data-pin="{{ forloop.index }}"
+          aria-label="{{ 'sections.lookbook.pin_label' | t: number: pin_number, product: block.settings.product.title | escape }}"
+          {{ block.shopify_attributes }}
+        >
+          {{- pin_number -}}
+        </button>
+      {%- endfor -%}
+    </div>
+
+    <ol class="look__list" role="list">
+      {%- for block in section.blocks -%}
+        {%- assign p = block.settings.product -%}
+        <li class="look__item" data-item="{{ forloop.index }}">
+          <span class="t-label t-muted">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+          <div class="look__thumb media">
+            {%- if p.featured_image -%}
+              {{ p.featured_image | image_url: width: 240 | image_tag: widths: '80, 160, 240', sizes: '80px', alt: '', loading: 'lazy' }}
+            {%- endif -%}
+          </div>
+          <div>
+            {%- if p != blank -%}
+              <a href="{{ p.url }}" class="look__name">{{ p.title | escape }}</a>
+              <p class="t-label t-label--sm t-muted" style="margin-top:4px">{{ block.settings.note | escape }}</p>
+            {%- else -%}
+              <span class="look__name">{{ 'onboarding.product_title' | t }}</span>
+            {%- endif -%}
+          </div>
+          <span class="look__price">
+            {%- if p != blank -%}{% render 'price', product: p %}{%- endif -%}
+          </span>
+        </li>
+      {%- endfor -%}
+      {%- if section.settings.button_link != blank -%}
+        <li class="look__cta">
+          <a href="{{ section.settings.button_link }}" class="btn btn--outline btn--block">
+            <span>{{ section.settings.button_label | escape }}</span>{% render 'icon', name: 'arrow' %}
+          </a>
+        </li>
+      {%- endif -%}
+    </ol>
+  </look-book>
+</section>
+
+<style>
+  .look__grid { display: grid; border-bottom: 1px solid var(--line); }
+  /* The box takes the image's own ratio so hotspot percentages stay exact at every width. */
+  .look__media { position: relative; aspect-ratio: var(--look-ratio, 4 / 3); }
+  .look__media > img, .look__media > svg { position: absolute; inset: 0; }
+  .look__pin {
+    position: absolute;
+    translate: -50% -50%;
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    background: var(--paper);
+    color: var(--ink);
+    border: 1px solid var(--ink);
+    transition: background var(--dur) var(--ease), color var(--dur) var(--ease), scale var(--dur) var(--ease);
+  }
+  .look__pin::after {
+    content: '';
+    position: absolute;
+    inset: -7px;
+    border: 1px solid var(--paper);
+    opacity: 0.7;
+  }
+  .look__pin[data-active], .look__pin:hover { background: var(--signal); scale: 1.08; }
+  .look__list { display: grid; align-content: start; }
+  .look__item {
+    display: grid;
+    grid-template-columns: 28px 64px 1fr auto;
+    gap: 14px;
+    align-items: center;
+    padding: 14px var(--gutter);
+    border-bottom: 1px solid var(--line);
+    transition: background var(--dur) var(--ease);
+  }
+  .look__item[data-active] { background: rgba(var(--ink-rgb), 0.05); }
+  .look__item[data-active] > .t-label:first-child { color: var(--signal); }
+  .look__thumb { aspect-ratio: 4 / 5; }
+  .look__thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .look__name { font-weight: 550; text-decoration: none; }
+  .look__name::after { content: ''; position: absolute; inset: 0; }
+  .look__item { position: relative; }
+  .look__cta { padding: 20px var(--gutter); }
+
+  @media (min-width: 990px) {
+    .look__grid { grid-template-columns: 2fr 1fr; }
+    .look__media { border-right: 1px solid var(--line); }
+    .look__list { position: sticky; top: var(--header-h); }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Lookbook",
+  "tag": "div",
+  "max_blocks": 8,
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Image" },
+    { "type": "text", "id": "index_label", "label": "Index label", "default": "02" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Worn: Pasar Cihapit, 07:40" },
+    { "type": "text", "id": "button_label", "label": "Button label", "default": "Shop the look" },
+    { "type": "url", "id": "button_link", "label": "Button link" }
+  ],
+  "blocks": [
+    {
+      "type": "hotspot",
+      "name": "Hotspot",
+      "settings": [
+        { "type": "product", "id": "product", "label": "Product" },
+        { "type": "text", "id": "note", "label": "Note", "default": "Wearing size M" },
+        { "type": "range", "id": "x", "label": "Horizontal position", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 50 },
+        { "type": "range", "id": "y", "label": "Vertical position", "min": 0, "max": 100, "step": 1, "unit": "%", "default": 50 }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Lookbook",
+      "blocks": [
+        { "type": "hotspot", "settings": { "x": 46, "y": 34 } },
+        { "type": "hotspot", "settings": { "x": 52, "y": 66 } },
+        { "type": "hotspot", "settings": { "x": 30, "y": 82 } }
+      ]
+    }
+  ]
+}
+{% endschema %}

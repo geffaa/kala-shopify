@@ -1,0 +1,138 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Kala",
+    "theme_version": "1.0.0",
+    "theme_author": "Yodhimas Geffananda",
+    "theme_documentation_url": "https://github.com/",
+    "theme_support_url": "https://github.com/"
+  },
+  {
+    "name": "Brand",
+    "settings": [
+      {
+        "type": "text",
+        "id": "wordmark",
+        "label": "Wordmark",
+        "default": "KALA",
+        "info": "Used when no logo image is set."
+      },
+      {
+        "type": "image_picker",
+        "id": "logo",
+        "label": "Logo image"
+      },
+      {
+        "type": "range",
+        "id": "logo_width",
+        "label": "Logo width",
+        "min": 60,
+        "max": 240,
+        "step": 4,
+        "unit": "px",
+        "default": 96
+      },
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "Favicon",
+        "info": "32 × 32px PNG recommended."
+      }
+    ]
+  },
+  {
+    "name": "Colors",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "The palette is intentionally small. Signal is reserved for time-sensitive information: countdowns, low stock, sale prices."
+      },
+      { "type": "color", "id": "color_paper", "label": "Paper", "default": "#EEEBE4" },
+      { "type": "color", "id": "color_ink", "label": "Ink", "default": "#131312" },
+      { "type": "color", "id": "color_muted", "label": "Muted text", "default": "#5F5C55" },
+      { "type": "color", "id": "color_rule", "label": "Rules & borders", "default": "#CFCAC0" },
+      { "type": "color", "id": "color_signal", "label": "Signal", "default": "#D9461B" }
+    ]
+  },
+  {
+    "name": "Product cards",
+    "settings": [
+      {
+        "type": "select",
+        "id": "card_ratio",
+        "label": "Image ratio",
+        "options": [
+          { "value": "4 / 5", "label": "Portrait 4:5" },
+          { "value": "3 / 4", "label": "Portrait 3:4" },
+          { "value": "1 / 1", "label": "Square" }
+        ],
+        "default": "4 / 5"
+      },
+      { "type": "checkbox", "id": "card_hover_image", "label": "Show second image on hover", "default": true },
+      {
+        "type": "checkbox",
+        "id": "card_quick_add",
+        "label": "Enable quick add",
+        "default": true,
+        "info": "Shows size buttons on cards for products with a single option."
+      }
+    ]
+  },
+  {
+    "name": "Inventory",
+    "settings": [
+      {
+        "type": "range",
+        "id": "low_stock_threshold",
+        "label": "Low stock threshold",
+        "min": 1,
+        "max": 20,
+        "step": 1,
+        "default": 5,
+        "info": "Variants at or below this quantity show a remaining count."
+      }
+    ]
+  },
+  {
+    "name": "Cart",
+    "settings": [
+      {
+        "type": "select",
+        "id": "cart_type",
+        "label": "Add to cart behaviour",
+        "options": [
+          { "value": "drawer", "label": "Open drawer" },
+          { "value": "page", "label": "Go to cart page" }
+        ],
+        "default": "drawer"
+      },
+      {
+        "type": "number",
+        "id": "free_shipping_threshold",
+        "label": "Free shipping threshold",
+        "info": "In the store's default currency. Leave empty to hide the progress meter. Hidden automatically when a customer browses in another currency.",
+        "default": 750000
+      },
+      { "type": "checkbox", "id": "cart_note", "label": "Enable order note", "default": true }
+    ]
+  },
+  {
+    "name": "Integrations",
+    "settings": [
+      {
+        "type": "text",
+        "id": "back_in_stock_endpoint",
+        "label": "Back-in-stock endpoint",
+        "default": "/apps/kala/back-in-stock",
+        "info": "App proxy path handled by the Kala ops service. See ops/README.md."
+      }
+    ]
+  },
+  {
+    "name": "Social",
+    "settings": [
+      { "type": "text", "id": "social_instagram", "label": "Instagram URL" },
+      { "type": "text", "id": "social_tiktok", "label": "TikTok URL" }
+    ]
+  }
+]

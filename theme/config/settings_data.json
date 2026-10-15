@@ -1,0 +1,21 @@
+{
+  "current": "Default",
+  "presets": {
+    "Default": {
+      "wordmark": "KALA",
+      "color_paper": "#EEEBE4",
+      "color_ink": "#131312",
+      "color_muted": "#5F5C55",
+      "color_rule": "#CFCAC0",
+      "color_signal": "#D9461B",
+      "card_ratio": "4 / 5",
+      "card_hover_image": true,
+      "card_quick_add": true,
+      "low_stock_threshold": 5,
+      "cart_type": "drawer",
+      "free_shipping_threshold": 750000,
+      "cart_note": true,
+      "back_in_stock_endpoint": "/apps/kala/back-in-stock"
+    }
+  }
+}

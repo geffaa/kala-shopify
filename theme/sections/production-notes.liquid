@@ -1,0 +1,92 @@
+{%- comment -%}
+  Editorial block: a short statement plus a spec sheet. Brand storytelling
+  that reads like a garment tag, not a marketing page.
+{%- endcomment -%}
+<section class="notes section scheme-{{ section.settings.color_scheme }}" aria-labelledby="notes-title-{{ section.id }}">
+  <div class="wrap notes__grid">
+    <div class="notes__lead">
+      <p class="t-label t-muted">{{ section.settings.index_label | escape }}</p>
+      <h2 class="t-h1" id="notes-title-{{ section.id }}">{{ section.settings.heading | escape | newline_to_br }}</h2>
+    </div>
+    <div class="notes__body">
+      <div class="rte t-body-lg">{{ section.settings.text }}</div>
+      {%- if section.blocks.size > 0 -%}
+        <dl class="spec notes__spec">
+          {%- for block in section.blocks -%}
+            <div class="spec__row" {{ block.shopify_attributes }}>
+              <dt class="t-label t-muted">{{ block.settings.label | escape }}</dt>
+              <dd>{{ block.settings.value | escape }}</dd>
+            </div>
+          {%- endfor -%}
+        </dl>
+      {%- endif -%}
+      {%- if section.settings.link_label != blank -%}
+        <a href="{{ section.settings.link }}" class="t-label link-arrow" style="margin-top:24px">{{ section.settings.link_label | escape }} {% render 'icon', name: 'arrow' %}</a>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+<style>
+  .notes__grid { display: grid; gap: 32px; }
+  .notes__lead { display: grid; gap: 16px; align-content: start; }
+  .notes__body { max-width: 640px; }
+  .notes__spec { margin-top: 32px; }
+  .notes .spec__row { padding-block: 12px; }
+  @media (min-width: 990px) {
+    .notes__grid { grid-template-columns: 5fr 6fr; gap: var(--gutter); }
+    .notes__body { padding-top: 32px; }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Production notes",
+  "tag": "div",
+  "max_blocks": 8,
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "options": [
+        { "value": "paper", "label": "Paper" },
+        { "value": "ink", "label": "Ink" },
+        { "value": "signal", "label": "Signal" }
+      ],
+      "default": "paper"
+    },
+    { "type": "text", "id": "index_label", "label": "Index label", "default": "03 — How it was made" },
+    { "type": "textarea", "id": "heading", "label": "Heading", "default": "Six tailors.\nThree weeks.\nNo second run." },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>Every drop is cut from a single bolt order. When the cloth is gone, the drop is gone. Offcuts become the tote that ships with your order.</p>"
+    },
+    { "type": "text", "id": "link_label", "label": "Link label", "default": "Read the production log" },
+    { "type": "url", "id": "link", "label": "Link" }
+  ],
+  "blocks": [
+    {
+      "type": "row",
+      "name": "Spec row",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Label", "default": "Cloth" },
+        { "type": "text", "id": "value", "label": "Value", "default": "Ramie linen, 180 gsm" }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Production notes",
+      "blocks": [
+        { "type": "row", "settings": { "label": "Cloth", "value": "Ramie linen, 180 gsm, woven in Majalaya" } },
+        { "type": "row", "settings": { "label": "Workshop", "value": "Cigadung, Bandung — 6 tailors" } },
+        { "type": "row", "settings": { "label": "Lead time", "value": "21 days from cut to fold" } },
+        { "type": "row", "settings": { "label": "Run", "value": "140 pieces across 12 styles" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

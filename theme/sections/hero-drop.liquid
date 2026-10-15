@@ -1,0 +1,212 @@
+{%- comment -%}
+  Campaign hero for a drop. The image is the LCP element on most pages, so
+  when this section is first on the page it loads eagerly with
+  fetchpriority=high and a preload header; otherwise it lazy-loads.
+{%- endcomment -%}
+{%- liquid
+  assign is_first = false
+  if section.index == 1
+    assign is_first = true
+  endif
+
+  assign now = 'now' | date: '%s' | plus: 0
+  assign countdown_active = false
+  if section.settings.countdown_to != blank
+    assign target = section.settings.countdown_to | date: '%s' | plus: 0
+    if target > now
+      assign countdown_active = true
+    endif
+  endif
+-%}
+
+<section class="hero scheme-{{ section.settings.color_scheme }} hero--img-{{ section.settings.image_position }}" aria-labelledby="hero-title-{{ section.id }}">
+  <div class="hero__media media"{% if section.settings.image %} style="--hero-ratio: {{ section.settings.image.aspect_ratio }}"{% endif %}>
+    {%- if section.settings.image -%}
+      {%- if is_first -%}
+        {% render 'image', image: section.settings.image, sizes: '(min-width: 990px) 58vw, 100vw', eager: true %}
+      {%- else -%}
+        {% render 'image', image: section.settings.image, sizes: '(min-width: 990px) 58vw, 100vw' %}
+      {%- endif -%}
+    {%- else -%}
+      {{ 'lifestyle-2' | placeholder_svg_tag: 'placeholder-svg' }}
+    {%- endif -%}
+    {%- if section.settings.image_caption != blank -%}
+      <p class="hero__caption t-label t-label--sm">{{ section.settings.image_caption | escape }}</p>
+    {%- endif -%}
+  </div>
+
+  <div class="hero__copy">
+    <p class="hero__eyebrow t-label">
+      <span>{{ section.settings.eyebrow | escape }}</span>
+      <span class="t-muted">{{ section.settings.eyebrow_right | escape }}</span>
+    </p>
+
+    {%- if is_first -%}
+      <h1 class="hero__title t-display" id="hero-title-{{ section.id }}">{{ section.settings.title | escape | newline_to_br }}</h1>
+    {%- else -%}
+      <h2 class="hero__title t-display" id="hero-title-{{ section.id }}">{{ section.settings.title | escape | newline_to_br }}</h2>
+    {%- endif -%}
+
+    <div class="hero__foot">
+      {%- if section.settings.text != blank -%}
+        <p class="hero__text t-body-lg">{{ section.settings.text | escape }}</p>
+      {%- endif -%}
+
+      {%- if section.blocks.size > 0 -%}
+        <dl class="spec">
+          {%- for block in section.blocks -%}
+            <div class="spec__row" {{ block.shopify_attributes }}>
+              <dt class="t-label t-muted">{{ block.settings.label | escape }}</dt>
+              <dd>{{ block.settings.value | escape }}</dd>
+            </div>
+          {%- endfor -%}
+        </dl>
+      {%- endif -%}
+
+      {%- if countdown_active -%}
+        <div class="hero__countdown">
+          <p class="t-label t-muted">{{ section.settings.countdown_label | escape }}</p>
+          <countdown-timer class="countdown" data-target="{{ target }}" data-format="blocks" data-after="{{ section.settings.countdown_after | escape }}">
+            <span class="countdown__fallback t-h1">{{ section.settings.countdown_to | date: '%d.%m.%Y · %H:%M' }}</span>
+          </countdown-timer>
+        </div>
+      {%- endif -%}
+
+      {%- if section.settings.button_label != blank -%}
+        <a href="{{ section.settings.button_link | default: routes.all_products_collection_url }}" class="btn hero__cta">
+          <span>{{ section.settings.button_label | escape }}</span>{% render 'icon', name: 'arrow' %}
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    display: grid;
+    border-bottom: 1px solid var(--line);
+  }
+  /* Mobile: the image's own ratio, so annotated artwork is never cropped. */
+  .hero__media { aspect-ratio: var(--hero-ratio, 4 / 5); position: relative; }
+  .hero__media img, .hero__media svg { position: absolute; inset: 0; }
+  .hero__caption {
+    position: absolute;
+    left: var(--gutter);
+    bottom: 14px;
+    background: var(--paper);
+    color: var(--ink);
+    padding: 5px 7px 4px;
+  }
+  .hero__copy {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    padding: 20px var(--gutter) 32px;
+  }
+  .hero__eyebrow { display: flex; justify-content: space-between; gap: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+  .hero__title { overflow-wrap: normal; }
+  .hero__foot { display: grid; gap: 24px; margin-top: auto; }
+  .hero__text { max-width: 38ch; }
+  .hero__cta { justify-self: stretch; }
+
+
+  .countdown { display: flex; gap: clamp(10px, 2vw, 20px); margin-top: 8px; }
+  .countdown__unit { display: grid; gap: 4px; }
+  .countdown__num {
+    font-size: var(--step-3);
+    font-weight: 760;
+    font-stretch: 110%;
+    line-height: 0.9;
+    color: var(--signal);
+    font-variant-numeric: tabular-nums;
+    min-width: 2ch;
+  }
+
+  @media (min-width: 990px) {
+    .hero {
+      grid-template-columns: 7fr 5fr;
+      min-height: calc(100svh - var(--header-h) - var(--bar-h));
+    }
+    .hero__media { aspect-ratio: auto; height: 100%; min-height: 560px; border-right: 1px solid var(--line); }
+    .hero--img-right .hero__media { order: 2; border-right: 0; border-left: 1px solid var(--line); }
+    .hero__copy { padding-block: 20px 32px; }
+    .hero__cta { justify-self: start; min-width: 280px; }
+    /* Sized to the copy column (5/12 of the viewport) so the longest word fits. */
+    .hero__title { font-size: clamp(3rem, 5.8vw, 8rem); }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Drop hero",
+  "tag": "div",
+  "class": "section-hero",
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Image" },
+    { "type": "text", "id": "image_caption", "label": "Image caption" },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Image position (desktop)",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "options": [
+        { "value": "paper", "label": "Paper" },
+        { "value": "ink", "label": "Ink" },
+        { "value": "signal", "label": "Signal" }
+      ],
+      "default": "paper"
+    },
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Drop 07" },
+    { "type": "text", "id": "eyebrow_right", "label": "Eyebrow (right)", "default": "Musim kemarau / 2026" },
+    { "type": "textarea", "id": "title", "label": "Title", "default": "Dry\nSeason\nUniform" },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Text",
+      "default": "Twelve pieces in undyed ramie and washed cotton drill, cut for 34° afternoons. Made once, in a run of 140."
+    },
+    { "type": "header", "content": "Countdown" },
+    {
+      "type": "text",
+      "id": "countdown_to",
+      "label": "Count down to",
+      "info": "ISO date-time with offset, e.g. 2026-10-24T19:00:00+07:00. Hidden automatically once passed."
+    },
+    { "type": "text", "id": "countdown_label", "label": "Countdown label", "default": "Opens in" },
+    { "type": "text", "id": "countdown_after", "label": "Text when countdown ends", "default": "Open now" },
+    { "type": "header", "content": "Button" },
+    { "type": "text", "id": "button_label", "label": "Label", "default": "View the drop" },
+    { "type": "url", "id": "button_link", "label": "Link" }
+  ],
+  "blocks": [
+    {
+      "type": "spec",
+      "name": "Spec row",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Label", "default": "Pieces" },
+        { "type": "text", "id": "value", "label": "Value", "default": "140, numbered" }
+      ]
+    }
+  ],
+  "max_blocks": 5,
+  "presets": [
+    {
+      "name": "Drop hero",
+      "blocks": [
+        { "type": "spec", "settings": { "label": "Release", "value": "Fri 24.10 — 19:00 WIB" } },
+        { "type": "spec", "settings": { "label": "Pieces", "value": "140, numbered" } },
+        { "type": "spec", "settings": { "label": "Cloth", "value": "Ramie linen, Majalaya" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

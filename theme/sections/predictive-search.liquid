@@ -1,0 +1,81 @@
+{%- comment -%}
+  Rendered via /search/suggest?section_id=predictive-search. Not added to
+  templates; the header's <predictive-search> element requests it directly.
+{%- endcomment -%}
+{%- if predictive_search.performed -%}
+  {%- assign res = predictive_search.resources -%}
+  <div class="ps">
+    {%- if res.queries.size > 0 -%}
+      <div class="ps__group">
+        <p class="t-label t-muted ps__label">{{ 'search.suggestions' | t }}</p>
+        <ul role="list" class="ps__queries">
+          {%- for q in res.queries -%}
+            <li><a href="{{ q.url }}" class="t-label">{{ q.styled_text }}</a></li>
+          {%- endfor -%}
+        </ul>
+      </div>
+    {%- endif -%}
+
+    {%- if res.products.size > 0 -%}
+      <div class="ps__group">
+        <p class="t-label t-muted ps__label">{{ 'search.products' | t }}</p>
+        <ul role="list">
+          {%- for product in res.products -%}
+            <li>
+              <a href="{{ product.url }}" class="ps__row">
+                <span class="ps__img media">
+                  {%- if product.featured_image -%}
+                    {{ product.featured_image | image_url: width: 120 | image_tag: widths: '56, 112', sizes: '56px', alt: '', loading: 'lazy' }}
+                  {%- endif -%}
+                </span>
+                <span>
+                  <span class="ps__title">{{ product.title }}</span>
+                  {%- if product.metafields.kala.drop_code != blank -%}
+                    <span class="t-label t-label--sm t-muted">{{ product.metafields.kala.drop_code }}</span>
+                  {%- endif -%}
+                </span>
+                <span>{% render 'price', product: product %}</span>
+              </a>
+            </li>
+          {%- endfor -%}
+        </ul>
+      </div>
+    {%- endif -%}
+
+    {%- if res.collections.size > 0 -%}
+      <div class="ps__group">
+        <p class="t-label t-muted ps__label">{{ 'search.collections' | t }}</p>
+        <ul role="list" class="ps__queries">
+          {%- for c in res.collections -%}
+            <li><a href="{{ c.url }}" class="t-label">{{ c.title | escape }}</a></li>
+          {%- endfor -%}
+        </ul>
+      </div>
+    {%- endif -%}
+
+    <a href="{{ routes.search_url }}?q={{ predictive_search.terms | url_encode }}&options%5Bprefix%5D=last" class="ps__all t-label">
+      <span>{{ 'search.view_all' | t: terms: predictive_search.terms }}</span>{% render 'icon', name: 'arrow' %}
+    </a>
+  </div>
+  <style>
+    .ps { display: grid; }
+    .ps__group { border-bottom: 1px solid var(--rule); padding-bottom: 8px; }
+    .ps__label { padding: 14px var(--gutter) 6px; }
+    .ps__queries { display: flex; flex-wrap: wrap; gap: 8px 20px; padding: 4px var(--gutter) 8px; }
+    .ps__queries a { text-decoration: none; }
+    .ps__queries mark { background: none; color: var(--signal); }
+    .ps__row {
+      display: grid;
+      grid-template-columns: 56px 1fr auto;
+      gap: 16px;
+      align-items: center;
+      padding: 8px var(--gutter);
+      text-decoration: none;
+    }
+    .ps__row:hover, .ps__row:focus-visible { background: rgba(var(--ink-rgb), 0.05); outline-offset: -2px; }
+    .ps__img { aspect-ratio: 4 / 5; }
+    .ps__img img { width: 100%; height: 100%; object-fit: cover; }
+    .ps__title { display: block; font-weight: 550; }
+    .ps__all { display: flex; justify-content: space-between; padding: 18px var(--gutter); text-decoration: none; background: var(--ink); color: var(--paper); }
+  </style>
+{%- endif -%}

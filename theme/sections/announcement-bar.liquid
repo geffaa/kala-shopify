@@ -1,0 +1,106 @@
+{%- comment -%}
+  Announcement bar with optional per-message countdown.
+  A message whose countdown has expired swaps to its "after" text on the
+  client, and on the server once the end time has passed, so the bar is
+  correct even before JS runs.
+{%- endcomment -%}
+{%- liquid
+  assign now = 'now' | date: '%s' | plus: 0
+  assign visible_blocks = section.blocks | where: 'type', 'message'
+-%}
+{%- if visible_blocks.size > 0 -%}
+  <rotating-bar class="bar t-label scheme-{{ section.settings.color_scheme }}" data-interval="{{ section.settings.interval | times: 1000 }}">
+    {%- for block in visible_blocks -%}
+      {%- liquid
+        assign has_countdown = false
+        assign expired = false
+        if block.settings.countdown_to != blank
+          assign has_countdown = true
+          assign target = block.settings.countdown_to | date: '%s' | plus: 0
+          if target <= now
+            assign expired = true
+          endif
+        endif
+      -%}
+      <div class="bar__msg" data-index="{{ forloop.index0 }}" {% unless forloop.first %}hidden{% endunless %} {{ block.shopify_attributes }}>
+        {%- if block.settings.link != blank %}<a href="{{ block.settings.link }}">{% endif -%}
+        {%- if expired -%}
+          <span>{{ block.settings.after_text | default: block.settings.text }}</span>
+        {%- else -%}
+          <span data-before>{{ block.settings.text }}</span>
+          {%- if has_countdown -%}
+            <span class="bar__sep" aria-hidden="true">/</span>
+            <countdown-timer
+              class="bar__time"
+              data-target="{{ target }}"
+              data-after="{{ block.settings.after_text | escape }}"
+            >
+              {{- block.settings.countdown_to | date: '%d.%m · %H:%M' -}}
+            </countdown-timer>
+          {%- endif -%}
+        {%- endif -%}
+        {%- if block.settings.link != blank %}</a>{% endif -%}
+      </div>
+    {%- endfor -%}
+  </rotating-bar>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Announcement bar",
+  "class": "section-announcement",
+  "enabled_on": { "groups": ["header"] },
+  "max_blocks": 3,
+  "settings": [
+    {
+      "type": "select",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "options": [
+        { "value": "ink", "label": "Ink" },
+        { "value": "signal", "label": "Signal" },
+        { "value": "paper", "label": "Paper" }
+      ],
+      "default": "ink"
+    },
+    {
+      "type": "range",
+      "id": "interval",
+      "label": "Rotate every",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "unit": "s",
+      "default": 5
+    }
+  ],
+  "blocks": [
+    {
+      "type": "message",
+      "name": "Message",
+      "settings": [
+        { "type": "text", "id": "text", "label": "Text", "default": "Drop 07 — Kemarau opens" },
+        { "type": "url", "id": "link", "label": "Link" },
+        {
+          "type": "text",
+          "id": "countdown_to",
+          "label": "Count down to",
+          "info": "ISO date-time with offset, e.g. 2026-10-24T19:00:00+07:00. Leave empty for a plain message."
+        },
+        {
+          "type": "text",
+          "id": "after_text",
+          "label": "Text after countdown ends",
+          "default": "Drop 07 is live — shop now"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Announcement bar",
+      "blocks": [{ "type": "message" }]
+    }
+  ]
+}
+{% endschema %}

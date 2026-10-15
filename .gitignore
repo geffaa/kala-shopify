@@ -1,0 +1,10 @@
+node_modules
+.env
+.DS_Store
+.shopify
+design/out/*.html
+preview/out
+.lighthouseci
+
+# CI workflow needs a token with the `workflow` scope to push: gh auth refresh -s workflow
+.github/workflows/ci.yml

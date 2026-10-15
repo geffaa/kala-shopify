@@ -1,0 +1,31 @@
+{%- comment -%}
+  Renders a price for a product or a variant.
+  - product: product object (uses the lowest price, "from" when prices vary)
+  - variant: variant object (overrides product)
+{%- endcomment -%}
+{%- liquid
+  if variant
+    assign current = variant.price
+    assign compare = variant.compare_at_price
+    assign varies = false
+  else
+    assign current = product.price_min
+    assign compare = product.compare_at_price_min
+    assign varies = product.price_varies
+  endif
+  assign current_formatted = current | money
+  assign on_sale = false
+  if compare > current
+    assign on_sale = true
+  endif
+-%}
+<span class="price{% if on_sale %} price--sale{% endif %}">
+  {%- if on_sale -%}
+    <span class="visually-hidden">{{ 'products.product.regular_price' | t }}</span>
+    <s>{{ compare | money }}</s>
+    <span class="visually-hidden">{{ 'products.product.sale_price' | t }}</span>
+  {%- endif -%}
+  <span class="price__current">
+    {%- if varies -%}{{ 'products.product.from_price' | t: price: current_formatted }}{%- else -%}{{ current_formatted }}{%- endif -%}
+  </span>
+</span>

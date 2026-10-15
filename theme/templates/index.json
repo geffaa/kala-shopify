@@ -1,0 +1,203 @@
+{
+  "sections": {
+    "hero": {
+      "type": "hero-drop",
+      "blocks": {
+        "spec-1": {
+          "type": "spec",
+          "settings": {
+            "label": "Release",
+            "value": "Fri 24.10 — 19:00 WIB"
+          }
+        },
+        "spec-2": {
+          "type": "spec",
+          "settings": {
+            "label": "Pieces",
+            "value": "140, numbered"
+          }
+        },
+        "spec-3": {
+          "type": "spec",
+          "settings": {
+            "label": "Cloth",
+            "value": "Ramie linen, Majalaya"
+          }
+        }
+      },
+      "block_order": [
+        "spec-1",
+        "spec-2",
+        "spec-3"
+      ],
+      "settings": {
+        "image_position": "left",
+        "color_scheme": "paper",
+        "eyebrow": "Drop 07",
+        "eyebrow_right": "Musim kemarau / 2026",
+        "title": "Dry\nSeason\nUniform",
+        "countdown_to": "2026-10-24T19:00:00+07:00",
+        "countdown_label": "Opens in",
+        "button_label": "View the drop",
+        "button_link": "shopify://collections/all",
+        "image": "shopify://shop_images/hero-07.png",
+        "image_caption": ""
+      }
+    },
+    "featured": {
+      "type": "featured-collection",
+      "settings": {
+        "collection": "drop-07-kemarau",
+        "index_label": "01",
+        "heading": "Drop 07 — Kemarau",
+        "limit": 8,
+        "columns": "4"
+      }
+    },
+    "lookbook": {
+      "type": "lookbook",
+      "blocks": {
+        "pin-1": {
+          "type": "hotspot",
+          "settings": {
+            "product": "jaket-kebun",
+            "x": 50,
+            "y": 42,
+            "note": "Wearing L over a tee"
+          }
+        },
+        "pin-2": {
+          "type": "hotspot",
+          "settings": {
+            "product": "celana-lapangan-drill",
+            "x": 87,
+            "y": 46,
+            "note": "Wearing 30, hem unrolled"
+          }
+        },
+        "pin-3": {
+          "type": "hotspot",
+          "settings": {
+            "product": "topi-lapangan",
+            "x": 21,
+            "y": 27,
+            "note": "One size"
+          }
+        },
+        "pin-4": {
+          "type": "hotspot",
+          "settings": {
+            "product": "tas-sisa-kain",
+            "x": 21,
+            "y": 72,
+            "note": "Pieced offcuts, one of one"
+          }
+        }
+      },
+      "block_order": [
+        "pin-1",
+        "pin-2",
+        "pin-3",
+        "pin-4"
+      ],
+      "settings": {
+        "index_label": "02",
+        "heading": "Worn: Pasar Cihapit, 07:40",
+        "button_label": "Shop the look",
+        "button_link": "shopify://collections/all",
+        "image": "shopify://shop_images/look-07.png"
+      }
+    },
+    "notes": {
+      "type": "production-notes",
+      "blocks": {
+        "r1": {
+          "type": "row",
+          "settings": {
+            "label": "Cloth",
+            "value": "Ramie linen, 180 gsm, woven in Majalaya"
+          }
+        },
+        "r2": {
+          "type": "row",
+          "settings": {
+            "label": "Workshop",
+            "value": "Cigadung, Bandung — 6 tailors"
+          }
+        },
+        "r3": {
+          "type": "row",
+          "settings": {
+            "label": "Lead time",
+            "value": "21 days from cut to fold"
+          }
+        },
+        "r4": {
+          "type": "row",
+          "settings": {
+            "label": "Run",
+            "value": "140 pieces across 12 styles"
+          }
+        }
+      },
+      "block_order": [
+        "r1",
+        "r2",
+        "r3",
+        "r4"
+      ],
+      "settings": {
+        "color_scheme": "ink"
+      }
+    },
+    "archive": {
+      "type": "collection-index",
+      "blocks": {
+        "d7": {
+          "type": "drop",
+          "settings": {
+            "collection": "drop-07-kemarau",
+            "number": "07",
+            "fallback_title": "Kemarau",
+            "season": "Dry season 2026",
+            "upcoming": true
+          }
+        },
+        "d6": {
+          "type": "drop",
+          "settings": {
+            "collection": "drop-06-pancaroba",
+            "number": "06",
+            "fallback_title": "Pancaroba",
+            "season": "Transition 2026"
+          }
+        },
+        "d5": {
+          "type": "drop",
+          "settings": {
+            "collection": "drop-05-hujan",
+            "number": "05",
+            "fallback_title": "Hujan",
+            "season": "Wet season 2025"
+          }
+        }
+      },
+      "block_order": [
+        "d7",
+        "d6",
+        "d5"
+      ],
+      "settings": {
+        "index_label": "04",
+        "heading": "Archive"
+      }
+    }
+  },
+  "order": [
+    "hero",
+    "featured",
+    "lookbook",
+    "notes",
+    "archive"
+  ]
+}

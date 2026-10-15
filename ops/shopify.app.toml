@@ -1,0 +1,28 @@
+# Dev Dashboard app config. Deploy with `shopify app deploy` from this folder.
+# Webhook subscriptions and the app proxy are declared here, so they are
+# versioned with the code instead of being clicked together in an admin.
+
+client_id = "REPLACE_WITH_CLIENT_ID"
+name = "kala-ops"
+application_url = "https://ops.example.com"
+embedded = false
+
+[access_scopes]
+scopes = "read_products,write_products,read_orders,write_orders,read_inventory,read_locations,read_themes,read_script_tags,read_discounts,read_publications,write_publications,write_files"
+
+[webhooks]
+api_version = "2026-07"
+
+  [[webhooks.subscriptions]]
+  topics = ["orders/create", "products/update", "inventory_levels/update", "app/uninstalled"]
+  uri = "https://ops.example.com/webhooks"
+
+  [[webhooks.subscriptions]]
+  compliance_topics = ["customers/data_request", "customers/redact", "shop/redact"]
+  uri = "https://ops.example.com/webhooks"
+
+# Storefront path /apps/kala/* is forwarded (signed) to https://ops.example.com/proxy/*
+[app_proxy]
+url = "https://ops.example.com/proxy"
+subpath = "kala"
+prefix = "apps"

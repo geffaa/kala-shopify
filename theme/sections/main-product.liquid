@@ -1,0 +1,395 @@
+{%- liquid
+  assign current_variant = product.selected_or_first_available_variant
+  assign product_form_id = 'product-form-' | append: section.id
+  assign size_chart = product.metafields.kala.size_chart.value
+  assign threshold = settings.low_stock_threshold
+
+-%}
+
+{{ 'product.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'product.js' | asset_url }}" type="module"></script>
+
+<product-page
+  class="product"
+  data-section-id="{{ section.id }}"
+  data-product-url="{{ product.url }}"
+  data-product-id="{{ product.id }}"
+>
+  {%- comment -%} ---------- Gallery ---------- {%- endcomment -%}
+  <div class="product__gallery">
+    <media-gallery class="gallery" aria-label="{{ 'products.product.gallery_label' | t }}">
+      <ul class="gallery__track" role="list" data-track>
+        {%- for media in product.media -%}
+          <li class="gallery__item{% if forloop.first %} gallery__item--lead{% endif %}" data-media-id="{{ media.id }}" id="media-{{ section.id }}-{{ media.id }}">
+            {%- case media.media_type -%}
+              {%- when 'image' -%}
+                {%- if forloop.first -%}
+                  {{ media | image_url: width: 2000 | image_tag: widths: '480, 720, 960, 1200, 1600, 2000', sizes: '(min-width: 990px) 58vw, 100vw', alt: media.alt, loading: 'eager', fetchpriority: 'high', preload: true }}
+                {%- else -%}
+                  {{ media | image_url: width: 2000 | image_tag: widths: '480, 720, 960, 1200, 1600', sizes: '(min-width: 990px) 29vw, 100vw', alt: media.alt, loading: 'lazy', decoding: 'async' }}
+                {%- endif -%}
+              {%- when 'video' -%}
+                {{ media | video_tag: autoplay: true, loop: true, muted: true, playsinline: true, controls: false, preload: 'none', image_size: '1200x' }}
+              {%- when 'external_video' -%}
+                {{ media | external_video_tag: loading: 'lazy' }}
+              {%- else -%}
+                {{ media.preview_image | image_url: width: 1600 | image_tag: loading: 'lazy', alt: media.alt }}
+            {%- endcase -%}
+          </li>
+        {%- else -%}
+          <li class="gallery__item gallery__item--lead">{{ 'apparel-1' | placeholder_svg_tag: 'placeholder-svg' }}</li>
+        {%- endfor -%}
+      </ul>
+      {%- if product.media.size > 1 -%}
+        <div class="gallery__status t-label t-label--sm" aria-hidden="true">
+          <span data-current>01</span> / {{ product.media.size | prepend: '0' | slice: -2, 2 }}
+        </div>
+        <div class="gallery__progress" aria-hidden="true"><span data-progress style="--count: {{ product.media.size }}"></span></div>
+      {%- endif -%}
+    </media-gallery>
+  </div>
+
+  {%- comment -%} ---------- Info column ---------- {%- endcomment -%}
+  <div class="product__info">
+    <div class="product__info-inner">
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+          {%- when '@app' -%}
+            {% render block %}
+
+          {%- when 'title' -%}
+            <div class="product__head" {{ block.shopify_attributes }}>
+              <p class="t-label t-muted product__crumbs">
+                {%- if product.metafields.kala.drop_code != blank -%}
+                  <span>{{ product.metafields.kala.drop_code }}</span>
+                {%- endif -%}
+                {%- if collection -%}
+                  <a href="{{ collection.url }}" class="link">{{ collection.title | escape }}</a>
+                {%- elsif product.collections.first -%}
+                  <a href="{{ product.collections.first.url }}" class="link">{{ product.collections.first.title | escape }}</a>
+                {%- endif -%}
+              </p>
+              <h1 class="product__title">{{ product.title | escape }}</h1>
+            </div>
+
+          {%- when 'price' -%}
+            <div class="product__price-row" {{ block.shopify_attributes }}>
+              <div id="price-{{ section.id }}" class="product__price">
+                {% render 'price', variant: current_variant %}
+              </div>
+              <p class="t-label t-label--sm t-muted">{{ 'products.product.tax_included' | t }}</p>
+            </div>
+
+          {%- when 'variant_picker' -%}
+            {%- unless product.has_only_default_variant -%}
+              <variant-picker class="opts" data-section-id="{{ section.id }}" {{ block.shopify_attributes }}>
+                {%- for option in product.options_with_values -%}
+                  {%- liquid
+                    assign option_name = option.name | downcase
+                    assign is_color = false
+                    assign is_size = false
+                    if option_name == 'color' or option_name == 'colour' or option_name == 'warna'
+                      assign is_color = true
+                    elsif option_name == 'size' or option_name == 'ukuran'
+                      assign is_size = true
+                    endif
+                  -%}
+                  <div class="opt" role="radiogroup" aria-labelledby="opt-label-{{ section.id }}-{{ option.position }}" data-position="{{ option.position }}">
+                    <div class="opt__head">
+                      <span class="t-label" id="opt-label-{{ section.id }}-{{ option.position }}">
+                        {{ option.name | escape }}<span class="t-muted"> — <span data-selected-value>{{ option.selected_value | escape }}</span></span>
+                      </span>
+                      {%- if is_size -%}
+                        <button type="button" class="t-label link" data-open-dialog="size-guide-{{ section.id }}" data-analytics="size_guide_opened">
+                          {{- 'products.product.size_guide' | t -}}
+                        </button>
+                      {%- endif -%}
+                    </div>
+                    <div class="opt__values{% if is_color %} opt__values--swatch{% endif %}">
+                      {%- for value in option.values -%}
+                        {%- liquid
+                          assign input_id = section.id | append: '-' | append: option.position | append: '-' | append: forloop.index0
+                        -%}
+                        <input
+                          type="radio"
+                          class="opt__input visually-hidden"
+                          id="{{ input_id }}"
+                          name="option-{{ option.position }}-{{ section.id }}"
+                          value="{{ value | escape }}"
+                          {% if value.selected %}checked{% endif %}
+                        >
+                        <label
+                          for="{{ input_id }}"
+                          class="opt__value t-label{% unless value.available %} is-unavailable{% endunless %}"
+                          {% if is_color %}style="{% render 'swatch-style', value: value %}"{% endif %}
+                        >
+                          {%- if is_color -%}<span class="opt__chip" aria-hidden="true"></span>{%- endif -%}
+                          <span>{{ value | escape }}</span>
+                          {%- unless value.available -%}<span class="visually-hidden">, {{ 'products.product.unavailable' | t }}</span>{%- endunless -%}
+                        </label>
+                      {%- endfor -%}
+                    </div>
+                  </div>
+                {%- endfor -%}
+                <script type="application/json" data-variants>
+                  [
+                    {%- for v in product.variants -%}
+                      {"id":{{ v.id }},"options":{{ v.options | json }},"available":{{ v.available | json }},"media":{{ v.featured_media.id | json }}}
+                      {%- unless forloop.last %},{% endunless -%}
+                    {%- endfor -%}
+                  ]
+                </script>
+              </variant-picker>
+            {%- endunless -%}
+
+          {%- when 'fit_note' -%}
+            {%- assign fit_note = product.metafields.kala.fit_note.value | default: block.settings.fallback -%}
+            {%- if fit_note != blank -%}
+              <p class="product__fit" {{ block.shopify_attributes }}>
+                <span class="t-label t-muted">{{ 'products.product.fit' | t }}</span>
+                <span>{{ fit_note | escape }}</span>
+              </p>
+            {%- endif -%}
+
+          {%- when 'buy_buttons' -%}
+            <div id="buy-{{ section.id }}" class="product__buy" {{ block.shopify_attributes }}>
+              <product-form data-section-id="{{ section.id }}">
+                {%- form 'product', product, id: product_form_id, novalidate: 'novalidate' -%}
+                  <input type="hidden" name="id" value="{{ current_variant.id }}" data-variant-input>
+                  <input type="hidden" name="quantity" value="1">
+                  <button
+                    type="submit"
+                    name="add"
+                    class="btn btn--block product__atc"
+                    data-main-atc
+                    {% unless current_variant.available %}
+                      disabled
+                    {% endunless %}
+                  >
+                    {%- if current_variant.available -%}
+                      <span class="btn__text">{{ 'products.product.add_to_cart' | t }}</span>
+                      <span>{{ current_variant.price | money }}</span>
+                    {%- else -%}
+                      <span class="btn__text">{{ 'products.product.sold_out' | t }}</span>
+                      <span>{{ current_variant.title | escape }}</span>
+                    {%- endif -%}
+                  </button>
+                  <p class="form-message form-message--error" role="alert" data-form-error hidden></p>
+                  {%- if block.settings.show_dynamic_checkout and current_variant.available -%}
+                    <div class="product__dynamic">{{ form | payment_button }}</div>
+                  {%- endif -%}
+                {%- endform -%}
+              </product-form>
+
+              {%- unless current_variant.available -%}
+                <back-in-stock class="bis">
+                  <p class="t-label">{{ 'products.back_in_stock.heading' | t: variant: current_variant.title }}</p>
+                  <form class="inline-form" novalidate>
+                    <label for="bis-email-{{ section.id }}" class="visually-hidden">{{ 'newsletter.label' | t }}</label>
+                    <input id="bis-email-{{ section.id }}" class="input" type="email" name="email" required autocomplete="email" placeholder="{{ 'newsletter.placeholder' | t }}">
+                    <input type="hidden" name="variant_id" value="{{ current_variant.id }}">
+                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                    <button type="submit" class="btn"><span class="btn__text">{{ 'products.back_in_stock.submit' | t }}</span></button>
+                  </form>
+                  <p class="form-message" role="status" data-status></p>
+                </back-in-stock>
+              {%- endunless -%}
+
+              <p class="product__stock t-label t-label--sm" id="inventory-{{ section.id }}">
+                {%- liquid
+                  if current_variant.available == false
+                    echo 'products.inventory.sold_out' | t
+                  elsif current_variant.inventory_management == 'shopify' and current_variant.inventory_quantity <= 0
+                    echo 'products.inventory.preorder' | t
+                  elsif current_variant.inventory_management == 'shopify' and current_variant.inventory_quantity <= threshold
+                    echo '<span class="t-signal">'
+                    echo 'products.inventory.low' | t: count: current_variant.inventory_quantity
+                    echo '</span>'
+                  else
+                    echo 'products.inventory.in_stock' | t
+                  endif
+                -%}
+              </p>
+            </div>
+
+          {%- when 'description' -%}
+            {%- if product.description != blank -%}
+              <details class="disclosure product__acc" {% if block.settings.open %}open{% endif %} {{ block.shopify_attributes }}>
+                <summary class="t-label">{{ 'products.product.description' | t }}</summary>
+                <div class="rte">{{ product.description }}</div>
+              </details>
+            {%- endif -%}
+
+          {%- when 'details' -%}
+            {%- liquid
+              assign material = product.metafields.kala.material.value
+              assign care = product.metafields.kala.care.value
+              assign origin = product.metafields.kala.origin.value
+            -%}
+            {%- if material != blank or care != blank or origin != blank -%}
+              <details class="disclosure product__acc" {{ block.shopify_attributes }}>
+                <summary class="t-label">{{ 'products.product.material_care' | t }}</summary>
+                <dl class="spec">
+                  {%- if material != blank -%}<div class="spec__row"><dt class="t-label t-muted">{{ 'products.product.material' | t }}</dt><dd>{{ material | escape }}</dd></div>{%- endif -%}
+                  {%- if origin != blank -%}<div class="spec__row"><dt class="t-label t-muted">{{ 'products.product.origin' | t }}</dt><dd>{{ origin | escape }}</dd></div>{%- endif -%}
+                  {%- if care != blank -%}<div class="spec__row"><dt class="t-label t-muted">{{ 'products.product.care' | t }}</dt><dd>{{ care | escape }}</dd></div>{%- endif -%}
+                </dl>
+              </details>
+            {%- endif -%}
+
+          {%- when 'collapsible' -%}
+            <details class="disclosure product__acc" {{ block.shopify_attributes }}>
+              <summary class="t-label">{{ block.settings.heading | escape }}</summary>
+              <div class="rte">
+                {{ block.settings.content }}
+                {{ block.settings.page.content }}
+              </div>
+            </details>
+        {%- endcase -%}
+      {%- endfor -%}
+
+      {%- comment -%} Complete the look, driven by a product list metafield. {%- endcomment -%}
+      {%- assign pairs = product.metafields.kala.complementary.value -%}
+      {%- if pairs != blank -%}
+        <div class="product__pairs">
+          <p class="t-label t-muted">{{ 'products.product.pairs_with' | t }}</p>
+          <ul role="list">
+            {%- for p in pairs limit: 3 -%}
+              <li class="pair">
+                <div class="pair__img media">
+                  {%- if p.featured_image -%}
+                    {{ p.featured_image | image_url: width: 200 | image_tag: widths: '64, 128, 200', sizes: '64px', alt: '', loading: 'lazy' }}
+                  {%- endif -%}
+                </div>
+                <a href="{{ p.url }}" class="pair__name">{{ p.title | escape }}</a>
+                <span>{% render 'price', product: p %}</span>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+
+  {%- comment -%} Sticky add-to-bag. Submits the main form via the form attribute. {%- endcomment -%}
+  <sticky-atc class="sticky-atc" id="sticky-{{ section.id }}" hidden>
+    <div class="sticky-atc__info">
+      <span class="sticky-atc__title">{{ product.title | escape }}</span>
+      <span class="t-label t-label--sm t-muted">
+        {%- unless product.has_only_default_variant %}{{ current_variant.title | escape }} · {% endunless -%}
+        {{ current_variant.price | money }}
+      </span>
+    </div>
+    <button
+      type="submit"
+      name="add"
+      form="{{ product_form_id }}"
+      class="btn"
+      {% unless current_variant.available %}
+        disabled
+      {% endunless %}
+    >
+      <span class="btn__text">
+        {%- if current_variant.available -%}{{ 'products.product.add_to_cart' | t }}{%- else -%}{{ 'products.product.sold_out' | t }}{%- endif -%}
+      </span>
+    </button>
+  </sticky-atc>
+</product-page>
+
+{%- comment -%} Size guide: metafield JSON first, page fallback second. {%- endcomment -%}
+<dialog class="modal" id="size-guide-{{ section.id }}" aria-labelledby="size-guide-title-{{ section.id }}">
+  <div class="drawer__head">
+    <span class="t-label" id="size-guide-title-{{ section.id }}">{{ 'products.product.size_guide' | t }}{% if size_chart.unit %} ({{ size_chart.unit }}){% endif %}</span>
+    <button type="button" class="t-label" data-close-dialog>{{ 'general.close' | t }}</button>
+  </div>
+  <div class="modal__body">
+    {%- if size_chart.rows -%}
+      <div class="size-table-wrap">
+        <table class="size-table">
+          <thead>
+            <tr>
+              {%- for col in size_chart.columns -%}<th scope="col" class="t-label">{{ col | escape }}</th>{%- endfor -%}
+            </tr>
+          </thead>
+          <tbody>
+            {%- for row in size_chart.rows -%}
+              <tr>
+                {%- for cell in row -%}
+                  {%- if forloop.first -%}<th scope="row" class="t-label">{{ cell | escape }}</th>{%- else -%}<td>{{ cell | escape }}</td>{%- endif -%}
+                {%- endfor -%}
+              </tr>
+            {%- endfor -%}
+          </tbody>
+        </table>
+      </div>
+      {%- if size_chart.note -%}<p class="t-muted" style="margin-top:16px">{{ size_chart.note | escape }}</p>{%- endif -%}
+    {%- elsif section.settings.size_guide_page != blank -%}
+      <div class="rte">{{ section.settings.size_guide_page.content }}</div>
+    {%- else -%}
+      <p class="t-muted">{{ 'products.product.size_guide_missing' | t }}</p>
+    {%- endif -%}
+  </div>
+</dialog>
+
+<script type="application/ld+json">
+  {{ product | structured_data }}
+</script>
+
+{% schema %}
+{
+  "name": "Product information",
+  "tag": "section",
+  "class": "section-main-product",
+  "settings": [
+    {
+      "type": "page",
+      "id": "size_guide_page",
+      "label": "Fallback size guide page",
+      "info": "Used when a product has no kala.size_chart metafield."
+    }
+  ],
+  "blocks": [
+    { "type": "@app" },
+    { "type": "title", "name": "Title", "limit": 1 },
+    { "type": "price", "name": "Price", "limit": 1 },
+    { "type": "variant_picker", "name": "Variant picker", "limit": 1 },
+    {
+      "type": "fit_note",
+      "name": "Fit note",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "fallback",
+          "label": "Fallback text",
+          "info": "Shown when the product has no kala.fit_note metafield."
+        }
+      ]
+    },
+    {
+      "type": "buy_buttons",
+      "name": "Buy buttons",
+      "limit": 1,
+      "settings": [
+        { "type": "checkbox", "id": "show_dynamic_checkout", "label": "Show dynamic checkout buttons", "default": false }
+      ]
+    },
+    {
+      "type": "description",
+      "name": "Description",
+      "limit": 1,
+      "settings": [{ "type": "checkbox", "id": "open", "label": "Open by default", "default": true }]
+    },
+    { "type": "details", "name": "Material & care (metafields)", "limit": 1 },
+    {
+      "type": "collapsible",
+      "name": "Collapsible tab",
+      "settings": [
+        { "type": "text", "id": "heading", "label": "Heading", "default": "Shipping & returns" },
+        { "type": "richtext", "id": "content", "label": "Content" },
+        { "type": "page", "id": "page", "label": "Content from page" }
+      ]
+    }
+  ]
+}
+{% endschema %}

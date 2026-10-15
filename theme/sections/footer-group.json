@@ -1,0 +1,18 @@
+{
+  "type": "footer",
+  "name": "Footer group",
+  "sections": {
+    "footer": {
+      "type": "footer",
+      "blocks": {
+        "signup": { "type": "signup", "settings": {} },
+        "menu-shop": { "type": "menu", "settings": { "heading": "Shop", "menu": "main-menu" } },
+        "menu-help": { "type": "menu", "settings": { "heading": "Help", "menu": "footer" } },
+        "studio": { "type": "text", "settings": {} }
+      },
+      "block_order": ["signup", "menu-shop", "menu-help", "studio"],
+      "settings": { "color_scheme": "ink", "show_wordmark": true }
+    }
+  },
+  "order": ["footer"]
+}

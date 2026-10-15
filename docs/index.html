@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kala Store Build — Yodhimas Geffananda</title>
+<meta name="description" content="Custom Shopify Online Store 2.0 theme, webhook and App Proxy integrations, and launch tooling. 90-second demo.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://geffaa.github.io/kala-shopify/">
+<meta property="og:title" content="Kala Store Build — Shopify developer portfolio">
+<meta property="og:description" content="Custom Shopify Online Store 2.0 theme, webhook and App Proxy integrations, and launch tooling. 90-second demo.">
+<meta property="og:image" content="https://geffaa.github.io/kala-shopify/poster.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap">
+<style>
+  /* Layout: one centred column like a garment tech pack: hairline rules, spec rows, the video as the main exhibit.
+     Single look by choice: it uses the Kala brand palette from the project itself. */
+  :root {
+    --paper: #EEEBE4;
+    --ink: #131312;
+    --muted: #5F5C55;
+    --rule: #CFCAC0;
+    --signal: #A8350F;      /* signal darkened for 4.5:1 text on paper */
+    --signal-fill: #D9461B;
+    --display: 'Archivo', 'Arial Narrow', system-ui, sans-serif;
+    --body: 'Archivo', system-ui, -apple-system, sans-serif;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font: 400 16px/1.55 var(--body);
+    font-variant-numeric: tabular-nums;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 28px 64px;
+    display: grid;
+    gap: 40px;
+  }
+  .label {
+    font-size: 12.5px;
+    font-weight: 600;
+    font-stretch: 78%;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .muted { color: var(--muted); }
+
+  .top { display: flex; justify-content: space-between; gap: 12px 24px; flex-wrap: wrap; padding-bottom: 14px; border-bottom: 1px solid var(--ink); }
+  .head { display: grid; gap: 18px; }
+  h1 {
+    margin: 0;
+    font-family: var(--display);
+    font-size: clamp(2.6rem, 1.2rem + 6.4vw, 6.6rem);
+    font-weight: 830;
+    font-stretch: 125%;
+    line-height: 0.86;
+    letter-spacing: -0.035em;
+    text-transform: uppercase;
+    text-wrap: balance;
+  }
+  .lede { margin: 0; max-width: 62ch; font-size: 18px; }
+  .lede b { font-weight: 600; }
+
+  .video { display: grid; gap: 10px; }
+  video {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    aspect-ratio: 16 / 10;
+    background: var(--ink);
+    border: 1px solid var(--ink);
+  }
+  .note { margin: 0; font-size: 13.5px; }
+
+  h2 { margin: 0 0 12px; font-size: 13px; }
+  .chapters { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); }
+  .chapters button {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr) minmax(0, 1.4fr);
+    gap: 4px 20px;
+    align-items: baseline;
+    padding: 13px 0;
+    border: 0;
+    border-bottom: 1px solid var(--rule);
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  .chapters button:hover .ch-title { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
+  .chapters button:focus-visible { outline: 2px solid var(--signal-fill); outline-offset: 2px; }
+  .chapters time { font-weight: 600; font-stretch: 85%; color: var(--muted); }
+  .ch-title { font-weight: 600; }
+  .ch-desc { color: var(--muted); font-size: 15px; }
+  .chapters li[aria-current="true"] time,
+  .chapters li[aria-current="true"] .ch-title { color: var(--signal); }
+
+  .cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--ink); }
+  .col { padding: 18px 22px 6px 0; display: grid; align-content: start; gap: 10px; }
+  .col + .col { padding-left: 22px; border-left: 1px solid var(--rule); }
+  .col ul { margin: 0; padding-left: 1.1em; display: grid; gap: 6px; font-size: 15px; }
+  .col li::marker { color: var(--muted); }
+
+  .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+  .stat { padding: 16px 16px 14px 0; display: grid; gap: 4px; }
+  .stat + .stat { padding-left: 16px; border-left: 1px solid var(--rule); }
+  .num { font-size: 40px; font-weight: 780; font-stretch: 110%; line-height: 1; color: var(--signal); }
+
+  .foot { display: flex; justify-content: space-between; gap: 12px 24px; flex-wrap: wrap; }
+
+  @media (max-width: 760px) {
+    .cols { grid-template-columns: 1fr; }
+    .col, .col + .col { padding: 16px 0 8px; border-left: 0; }
+    .col + .col { border-top: 1px solid var(--rule); }
+    .stats { grid-template-columns: 1fr 1fr; }
+    .stat:nth-child(3) { padding-left: 0; border-left: 0; }
+    .stat:nth-child(n + 3) { border-top: 1px solid var(--rule); }
+    .chapters button { grid-template-columns: 52px minmax(0, 1fr); }
+    .ch-desc { grid-column: 2; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+<style>body { margin: 0; }</style>
+</head>
+<body>
+<div class="page">
+  <div class="top label">
+    <span>Portfolio · Shopify developer</span>
+    <span class="muted">Yodhimas Geffananda</span>
+  </div>
+
+  <header class="head">
+    <p class="label" style="margin:0;color:var(--signal)">Custom Online Store 2.0 theme + integrations</p>
+    <h1>Kala store build</h1>
+    <p class="lede">
+      A complete Shopify build for a fictional Bandung apparel label that sells in limited, numbered drops.
+      <b>Custom theme from scratch</b> (Liquid, no jQuery), plus webhook and App Proxy integrations and a CLI that audits store speed and checks a campaign before launch.
+    </p>
+  </header>
+
+  <section class="video" aria-label="Demo video">
+    <video id="demo" controls playsinline preload="metadata" poster="poster.jpg">
+      <source src="kala-demo.mp4" type="video/mp4">
+    </video>
+    <p class="note muted">1:32 · no sound · recorded from the theme running locally on the demo catalog.</p>
+  </section>
+
+  <section aria-labelledby="ch-h">
+    <h2 class="label" id="ch-h">Chapters</h2>
+    <ol class="chapters" id="chapters">
+      <li><button type="button" data-t="3.4"><time>0:03</time><span class="ch-title">Home and drop countdown</span><span class="ch-desc">Countdown switches to “live” by itself. Size quick-add on cards; cart drawer updates in one request.</span></button></li>
+      <li><button type="button" data-t="22.4"><time>0:22</time><span class="ch-title">Lookbook and archive</span><span class="ch-desc">Shoppable hotspots linked to product rows. Drop status is derived from inventory.</span></button></li>
+      <li><button type="button" data-t="34.2"><time>0:34</time><span class="ch-title">Product page</span><span class="ch-desc">Colour swaps image, price and stock. Sold-out sizes offer a restock alert. Size guide from a metafield.</span></button></li>
+      <li><button type="button" data-t="57.9"><time>0:57</time><span class="ch-title">Filtering and search</span><span class="ch-desc">Filters and sorting without reloads, shareable URLs. Predictive search.</span></button></li>
+      <li><button type="button" data-t="71.4"><time>1:11</time><span class="ch-title">Mobile</span><span class="ch-desc">Swipe gallery, sticky add-to-bag, filter drawer.</span></button></li>
+      <li><button type="button" data-t="86.2"><time>1:26</time><span class="ch-title">Behind the storefront</span><span class="ch-desc">Pre-launch checklist output and test results.</span></button></li>
+    </ol>
+  </section>
+
+  <section aria-labelledby="cov-h">
+    <h2 class="label" id="cov-h">How it maps to the role</h2>
+    <div class="cols">
+      <div class="col">
+        <p class="label" style="margin:0">Keeping the store healthy</p>
+        <ul>
+          <li>Audit of third-party scripts, app embeds and snippets left by removed apps</li>
+          <li>Core Web Vitals from real users (PageSpeed Insights), per-app blocking time</li>
+          <li>GA4 and Meta pixel through Shopify Customer Events, consent-aware</li>
+        </ul>
+      </div>
+      <div class="col">
+        <p class="label" style="margin:0">Building and improving</p>
+        <ul>
+          <li>21 editor-configurable sections, English and Bahasa Indonesia</li>
+          <li>Webhooks with HMAC checks: orders to a 3PL, low-stock alerts to Slack</li>
+          <li>Back-in-stock alerts through an App Proxy and the Admin API</li>
+        </ul>
+      </div>
+      <div class="col">
+        <p class="label" style="margin:0">Supporting campaigns</p>
+        <ul>
+          <li>Launch check: oversell, misleading sale prices, discount timing, alt text</li>
+          <li>Countdowns in bar, hero and password page that go live on time</li>
+          <li>Built to stay fast under launch traffic: one font file, no blocking scripts</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section aria-label="Verification">
+    <div class="stats">
+      <div class="stat"><span class="num">0</span><span class="label muted">Theme Check offenses</span></div>
+      <div class="stat"><span class="num">23</span><span class="label muted">Backend tests</span></div>
+      <div class="stat"><span class="num">13/13</span><span class="label muted">End-to-end checks</span></div>
+      <div class="stat"><span class="num">100</span><span class="label muted">Lighthouse accessibility</span></div>
+    </div>
+  </section>
+
+  <footer class="foot label muted">
+    <span>Kala is a fictional brand made for this portfolio.</span>
+    <a href="https://github.com/geffaa/kala-shopify" style="color:inherit">Source code on GitHub →</a>
+  </footer>
+</div>
+
+<script>
+  const video = document.getElementById('demo');
+  const items = [...document.querySelectorAll('#chapters li')];
+  const starts = items.map((li) => Number(li.querySelector('button').dataset.t));
+
+  items.forEach((li, i) => {
+    li.querySelector('button').addEventListener('click', () => {
+      video.currentTime = starts[i];
+      video.play().catch(() => {});
+      video.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  });
+
+  video.addEventListener('timeupdate', () => {
+    let current = -1;
+    starts.forEach((s, i) => { if (video.currentTime >= s - 0.05) current = i; });
+    items.forEach((li, i) => li.setAttribute('aria-current', String(i === current)));
+  });
+</script>
+</body>
+</html>

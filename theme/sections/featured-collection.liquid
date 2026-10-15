@@ -1,0 +1,77 @@
+{%- liquid
+  assign collection = section.settings.collection
+  assign columns = section.settings.columns
+  assign limit = section.settings.limit
+-%}
+<section class="featured section--flush" aria-labelledby="fc-title-{{ section.id }}">
+  <div class="sec-head">
+    <span class="t-label t-muted">{{ section.settings.index_label | escape }}</span>
+    <h2 class="sec-head__title" id="fc-title-{{ section.id }}">
+      {{- section.settings.heading | default: collection.title | escape -}}
+      {%- if collection != blank -%}
+        <span class="t-label t-muted" style="margin-left:10px">{{ 'collections.general.items_count' | t: count: collection.products_count }}</span>
+      {%- endif -%}
+    </h2>
+    {%- if section.settings.show_view_all and collection != blank -%}
+      <a href="{{ collection.url }}" class="t-label link-arrow">{{ 'general.view_all' | t }} {% render 'icon', name: 'arrow' %}</a>
+    {%- else -%}
+      <span></span>
+    {%- endif -%}
+  </div>
+
+  <ul role="list" class="grid grid--{{ columns }}" style="--cols-desktop: {{ columns }}">
+    {%- if collection != blank and collection.products_count > 0 -%}
+      {%- for product in collection.products limit: limit -%}
+        <li>{% render 'product-card', product: product, columns: columns %}</li>
+      {%- endfor -%}
+    {%- else -%}
+      {%- for i in (1..limit) -%}
+        <li>
+          <article class="card">
+            {%- assign ph = i | modulo: 4 | plus: 1 -%}
+            <div class="card__media">{{ 'apparel-' | append: ph | placeholder_svg_tag: 'placeholder-svg' }}</div>
+            <div class="card__info">
+              <span class="card__index t-label t-label--sm t-muted">07.{{ i | prepend: '0' | slice: -2, 2 }}</span>
+              <h3 class="card__title">{{ 'onboarding.product_title' | t }}</h3>
+              <span class="card__price">{{ 1990000 | money }}</span>
+            </div>
+          </article>
+        </li>
+      {%- endfor -%}
+    {%- endif -%}
+  </ul>
+</section>
+
+{% schema %}
+{
+  "name": "Featured collection",
+  "tag": "div",
+  "settings": [
+    { "type": "collection", "id": "collection", "label": "Collection" },
+    { "type": "text", "id": "index_label", "label": "Index label", "default": "01" },
+    { "type": "text", "id": "heading", "label": "Heading", "info": "Defaults to the collection title." },
+    {
+      "type": "range",
+      "id": "limit",
+      "label": "Products to show",
+      "min": 2,
+      "max": 16,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "select",
+      "id": "columns",
+      "label": "Columns (desktop)",
+      "options": [
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" },
+        { "value": "5", "label": "5" }
+      ],
+      "default": "4"
+    },
+    { "type": "checkbox", "id": "show_view_all", "label": "Show “View all” link", "default": true }
+  ],
+  "presets": [{ "name": "Featured collection" }]
+}
+{% endschema %}

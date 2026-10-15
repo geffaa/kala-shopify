@@ -1,0 +1,10 @@
+<section class="section wrap" style="display:grid;gap:24px;justify-items:start">
+  <p class="t-label t-muted">404</p>
+  <h1 class="t-display">{{ 'templates.404.title' | t }}</h1>
+  <p class="t-body-lg" style="max-width:40ch">{{ 'templates.404.subtext' | t }}</p>
+  <a href="{{ routes.all_products_collection_url }}" class="btn"><span>{{ 'cart.general.continue' | t }}</span>{% render 'icon', name: 'arrow' %}</a>
+</section>
+
+{% schema %}
+{ "name": "404", "tag": "section", "settings": [] }
+{% endschema %}

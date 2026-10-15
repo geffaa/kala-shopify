@@ -1,0 +1,19 @@
+<article class="section">
+  <header class="wrap--narrow" style="display:grid;gap:16px">
+    <time class="t-label t-muted" datetime="{{ article.published_at | date: '%Y-%m-%d' }}">{{ article.published_at | date: '%d.%m.%Y' }} · {{ article.author }}</time>
+    <h1 class="t-h1">{{ article.title | escape }}</h1>
+  </header>
+  {%- if article.image -%}
+    <div class="media" style="margin-block:40px;aspect-ratio:16/9">
+      {% render 'image', image: article.image, sizes: '100vw', eager: true %}
+    </div>
+  {%- endif -%}
+  <div class="wrap--narrow rte t-body-lg" style="margin-top:32px">{{ article.content }}</div>
+  <div class="wrap--narrow" style="margin-top:48px">
+    <a href="{{ blog.url }}" class="t-label link-arrow">{% render 'icon', name: 'arrow-left' %} {{ blog.title | escape }}</a>
+  </div>
+</article>
+
+{% schema %}
+{ "name": "Article", "tag": "section", "settings": [] }
+{% endschema %}

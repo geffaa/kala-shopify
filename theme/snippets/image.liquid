@@ -1,0 +1,20 @@
+{%- comment -%}
+  Responsive image wrapper around image_tag.
+  - image (required)
+  - sizes: sizes attribute (default 100vw)
+  - widths: candidate widths (default covers phone → 2x desktop)
+  - class
+  - eager: true for above-the-fold LCP candidates. Sets fetchpriority=high and
+    emits a preload Link header via `preload: true`.
+  - alt: override alt text
+{%- endcomment -%}
+{%- liquid
+  assign sizes = sizes | default: '100vw'
+  assign widths = widths | default: '360, 540, 720, 960, 1200, 1600, 2000'
+  assign alt_text = alt | default: image.alt
+-%}
+{%- if eager -%}
+  {{ image | image_url: width: 2000 | image_tag: widths: widths, sizes: sizes, class: class, alt: alt_text, loading: 'eager', fetchpriority: 'high', preload: true }}
+{%- else -%}
+  {{ image | image_url: width: 2000 | image_tag: widths: widths, sizes: sizes, class: class, alt: alt_text, loading: 'lazy', decoding: 'async' }}
+{%- endif -%}

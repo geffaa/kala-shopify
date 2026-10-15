@@ -1,0 +1,35 @@
+{
+  "type": "header",
+  "name": "Header group",
+  "sections": {
+    "announcement": {
+      "type": "announcement-bar",
+      "blocks": {
+        "msg-1": {
+          "type": "message",
+          "settings": {
+            "text": "Drop 07 — Kemarau opens",
+            "link": "shopify://collections/all",
+            "countdown_to": "2026-10-24T19:00:00+07:00",
+            "after_text": "Drop 07 is live — 140 pieces, no restock"
+          }
+        },
+        "msg-2": {
+          "type": "message",
+          "settings": {
+            "text": "Free shipping in Indonesia over Rp 750.000",
+            "countdown_to": "",
+            "after_text": ""
+          }
+        }
+      },
+      "block_order": ["msg-1", "msg-2"],
+      "settings": { "color_scheme": "ink", "interval": 5 }
+    },
+    "header": {
+      "type": "header",
+      "settings": { "menu": "main-menu", "search_limit": 6 }
+    }
+  },
+  "order": ["announcement", "header"]
+}

@@ -1,0 +1,132 @@
+{%- comment -%}
+  Product card.
+  - product (required)
+  - columns: desktop column count, used for the sizes attribute (default 4)
+  - eager: load the image eagerly (first row of a collection page)
+{%- endcomment -%}
+{%- liquid
+  assign columns = columns | default: 4
+  assign image_sizes = '(min-width: 750px) calc(100vw / ' | append: columns | append: '), 50vw'
+
+  assign primary = product.featured_media.preview_image
+  assign secondary = nil
+  if settings.card_hover_image and product.media.size > 1
+    assign secondary = product.media[1].preview_image
+  endif
+
+  assign color_option = nil
+  for option in product.options_with_values
+    assign option_name = option.name | downcase
+    if option_name == 'color' or option_name == 'colour' or option_name == 'warna'
+      assign color_option = option
+    endif
+  endfor
+
+  comment
+    Sum managed inventory so the card can flag "last few" without a request.
+    Variants that are not tracked by Shopify are treated as unlimited.
+  endcomment
+  assign tracked_total = 0
+  assign untracked = false
+  for variant in product.variants
+    if variant.inventory_management == 'shopify' and variant.inventory_policy == 'deny'
+      if variant.inventory_quantity > 0
+        assign tracked_total = tracked_total | plus: variant.inventory_quantity
+      endif
+    else
+      assign untracked = true
+    endif
+  endfor
+  assign low_stock = false
+  if product.available and untracked == false and tracked_total <= settings.low_stock_threshold
+    assign low_stock = true
+  endif
+
+  assign discount_pct = 0
+  if product.compare_at_price_min > product.price_min
+    assign diff = product.compare_at_price_min | minus: product.price_min | times: 100.0
+    assign discount_pct = diff | divided_by: product.compare_at_price_min | round
+  endif
+
+  assign show_quick_add = false
+  if settings.card_quick_add and product.available and product.options.size == 1
+    assign show_quick_add = true
+  endif
+-%}
+<article class="card" data-product-id="{{ product.id }}">
+  <div class="card__visual">
+  <a href="{{ product.url }}" class="card__media" tabindex="-1" aria-hidden="true">
+    {%- if primary -%}
+      {%- if eager -%}
+        {{ primary | image_url: width: 1200 | image_tag: widths: '240, 360, 480, 640, 800, 1000', sizes: image_sizes, alt: '', loading: 'eager', fetchpriority: 'high' }}
+      {%- else -%}
+        {{ primary | image_url: width: 1200 | image_tag: widths: '240, 360, 480, 640, 800, 1000', sizes: image_sizes, alt: '', loading: 'lazy', decoding: 'async' }}
+      {%- endif -%}
+      {%- if secondary -%}
+        {{ secondary | image_url: width: 1200 | image_tag: widths: '240, 360, 480, 640, 800, 1000', sizes: image_sizes, alt: '', loading: 'lazy', decoding: 'async', class: 'card__alt' }}
+      {%- endif -%}
+    {%- else -%}
+      {{ 'apparel-1' | placeholder_svg_tag: 'placeholder-svg' }}
+    {%- endif -%}
+  </a>
+
+  <div class="card__badges">
+    {%- if product.available == false -%}
+      <span class="badge badge--ink t-label t-label--sm">{{ 'products.product.sold_out' | t }}</span>
+    {%- elsif low_stock -%}
+      <span class="badge badge--signal t-label t-label--sm">{{ 'products.product.last_units' | t: count: tracked_total }}</span>
+    {%- elsif discount_pct > 0 -%}
+      <span class="badge badge--signal t-label t-label--sm">&minus;{{ discount_pct }}%</span>
+    {%- endif -%}
+  </div>
+
+  {%- if show_quick_add -%}
+    <quick-add class="quick-add" data-product-handle="{{ product.handle }}">
+      <span class="quick-add__label t-label t-label--sm t-muted">
+        {%- if product.has_only_default_variant -%}
+          {{- 'products.product.quick_add' | t -}}
+        {%- else -%}
+          {{- 'products.product.quick_add_option' | t: option: product.options.first -}}
+        {%- endif -%}
+      </span>
+      {%- for variant in product.variants -%}
+        <button
+          type="button"
+          class="t-label"
+          data-variant-id="{{ variant.id }}"
+          {% unless variant.available %}
+            disabled
+          {% endunless %}
+          aria-label="{{ 'products.product.add_variant' | t: product: product.title, variant: variant.title | escape }}"
+        >
+          {%- if product.has_only_default_variant -%}
+            {{- 'products.product.add_to_cart' | t -}}
+          {%- else -%}
+            {{- variant.title -}}
+          {%- endif -%}
+        </button>
+      {%- endfor -%}
+    </quick-add>
+  {%- endif -%}
+  </div>
+
+  <div class="card__info">
+    {%- if product.metafields.kala.drop_code != blank -%}
+      <span class="card__index t-label t-label--sm t-muted">{{ product.metafields.kala.drop_code }}</span>
+    {%- endif -%}
+    <h3 class="card__title">
+      <a href="{{ product.url }}">{{ product.title | escape }}</a>
+    </h3>
+    <span class="card__price">{% render 'price', product: product %}</span>
+    {%- if color_option and color_option.values.size > 1 -%}
+      <div class="card__meta">
+        <ul class="swatches" role="list" aria-label="{{ color_option.name | escape }}">
+          {%- for value in color_option.values limit: 5 -%}
+            <li class="swatch" style="{% render 'swatch-style', value: value %}" title="{{ value | escape }}"></li>
+          {%- endfor -%}
+        </ul>
+        <span class="t-label t-label--sm t-muted">{{ 'products.product.color_count' | t: count: color_option.values.size }}</span>
+      </div>
+    {%- endif -%}
+  </div>
+</article>

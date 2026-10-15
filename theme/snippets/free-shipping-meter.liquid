@@ -1,0 +1,42 @@
+{%- comment -%}
+  Progress towards free shipping. The threshold is stored in the shop's
+  currency, so the meter only renders when the customer is checking out in
+  that currency; showing a converted number that disagrees with the checkout
+  rule would be worse than showing nothing.
+{%- endcomment -%}
+{%- liquid
+  assign threshold = settings.free_shipping_threshold | times: 100
+  assign show_meter = false
+  if threshold > 0 and cart.currency.iso_code == shop.currency and cart.item_count > 0
+    assign show_meter = true
+  endif
+-%}
+{%- if show_meter -%}
+  {%- liquid
+    assign remaining = threshold | minus: cart.total_price
+    assign remaining_money = remaining | money
+    assign progress = cart.total_price | times: 1.0 | divided_by: threshold
+    if progress > 1
+      assign progress = 1
+    endif
+  -%}
+  <div class="ship-meter{% if remaining <= 0 %} ship-meter--done{% endif %}">
+    <p class="t-label">
+      {%- if remaining > 0 -%}
+        {{ 'cart.shipping.remaining_html' | t: amount: remaining_money }}
+      {%- else -%}
+        {{ 'cart.shipping.unlocked' | t }}
+      {%- endif -%}
+    </p>
+    <div
+      class="ship-meter__track"
+      role="progressbar"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      aria-valuenow="{{ progress | times: 100 | round }}"
+      aria-label="{{ 'cart.shipping.progress_label' | t }}"
+    >
+      <div class="ship-meter__fill" style="--progress: {{ progress }}"></div>
+    </div>
+  </div>
+{%- endif -%}

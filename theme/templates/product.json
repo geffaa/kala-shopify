@@ -1,0 +1,30 @@
+{
+  "sections": {
+    "main": {
+      "type": "main-product",
+      "blocks": {
+        "title": { "type": "title", "settings": {} },
+        "price": { "type": "price", "settings": {} },
+        "picker": { "type": "variant_picker", "settings": {} },
+        "fit": { "type": "fit_note", "settings": { "fallback": "" } },
+        "buy": { "type": "buy_buttons", "settings": { "show_dynamic_checkout": false } },
+        "desc": { "type": "description", "settings": { "open": true } },
+        "details": { "type": "details", "settings": {} },
+        "shipping": {
+          "type": "collapsible",
+          "settings": {
+            "heading": "Shipping & returns",
+            "content": "<p>Ships from Bandung in 1–2 working days. Free shipping in Indonesia over Rp 750.000. Exchanges within 14 days for unworn pieces; drops are not restocked, so exchanges depend on what is left.</p>"
+          }
+        }
+      },
+      "block_order": ["title", "price", "picker", "fit", "buy", "desc", "details", "shipping"],
+      "settings": {}
+    },
+    "recs": {
+      "type": "product-recommendations",
+      "settings": { "index_label": "—", "heading": "Wear it with", "intent": "related", "limit": 4 }
+    }
+  },
+  "order": ["main", "recs"]
+}
