@@ -11,12 +11,14 @@
     "screenshots": "node preview/shoot.mjs",
     "images": "node design/build.mjs",
     "ops:test": "npm --prefix ops test",
-    "test": "npm run theme:check && npm run ops:test"
+    "test": "npm run theme:check && npm run ops:test",
+    "web": "node preview/web-build.mjs"
   },
   "type": "module",
   "devDependencies": {
     "@fontsource-variable/archivo": "^5.3.0",
     "@shopify/cli": "^4.9.4",
+    "esbuild": "^0.28.2",
     "liquidjs": "^10.30.0",
     "puppeteer-core": "^25.14.0"
   },

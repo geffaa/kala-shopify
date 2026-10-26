@@ -14,6 +14,8 @@ Supporting folders: [`design/`](design) generates all product imagery as technic
 
 **▶ 90-second demo: [geffaa.github.io/kala-shopify](https://geffaa.github.io/kala-shopify/)**
 
+**🛒 Try the store: [geffaa.github.io/kala-shopify/store/](https://geffaa.github.io/kala-shopify/store/)**: the real theme, rendered in your browser. Product pages, the cart drawer, filters and predictive search work; checkout is Shopify’s.
+
 [![Home](docs/screenshots/home-hero.png)](https://geffaa.github.io/kala-shopify/)
 
 ---
@@ -124,6 +126,26 @@ The brief I set: *anti-template*. No rounded cards, gradients, drop shadows or i
 </p>
 
 ---
+
+## The live store demo
+
+`docs/store/` is the offline preview, running in the visitor's browser instead of on a server.
+`npm run web` bundles `preview/server.mjs` unchanged into a Service Worker with esbuild: Node's
+`fs`, `http` and `path` are swapped for small shims, the theme and catalog are embedded, and
+liquidjs reads them from memory. The worker answers every request under the store's path (pages,
+the Ajax Cart API, Section Rendering, search), re-basing URLs for GitHub Pages. Cart requests are
+replayed when the browser restarts an idle worker, so the bag survives, and a small cookie jar
+stands in for `Set-Cookie`, which synthetic responses can't carry.
+
+It passes the same 13 end-to-end checks as the Node preview:
+
+```bash
+npm run web && (cd docs && python3 -m http.server 8000) &
+WARMUP=1 BASE=http://localhost:8000/store npm run e2e
+```
+
+A development store remains the source of truth; this is for anyone who wants to click through
+without a store password.
 
 ## Running it
 
